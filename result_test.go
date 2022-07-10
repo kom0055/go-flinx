@@ -1,7 +1,7 @@
 package flinx
 
 import (
-	"github.com/kom0055/flinx/generics"
+	"github.com/kom0055/go-flinx/generics"
 	"gotest.tools/v3/assert"
 	"math"
 	"reflect"

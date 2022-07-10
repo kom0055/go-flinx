@@ -1,6 +1,6 @@
 package flinx
 
-import "github.com/kom0055/flinx/hashset"
+import "github.com/kom0055/go-flinx/hashset"
 
 // Except produces the set difference of two sequences. The set difference is
 // the members of the first sequence that don't appear in the second sequence.

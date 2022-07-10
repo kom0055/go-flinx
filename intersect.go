@@ -1,6 +1,6 @@
 package flinx
 
-import "github.com/kom0055/flinx/hashset"
+import "github.com/kom0055/go-flinx/hashset"
 
 // Intersect produces the set intersection of the source collection and the
 // provided input collection. The intersection of two sets A and B is defined as

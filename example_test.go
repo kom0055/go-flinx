@@ -2,7 +2,7 @@ package flinx
 
 import (
 	"fmt"
-	"github.com/kom0055/flinx/generics"
+	"github.com/kom0055/go-flinx/generics"
 	"gotest.tools/v3/assert"
 	"strings"
 	"testing"

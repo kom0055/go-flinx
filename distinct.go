@@ -1,6 +1,6 @@
 package flinx
 
-import "github.com/kom0055/flinx/hashset"
+import "github.com/kom0055/go-flinx/hashset"
 
 // Distinct method returns distinct elements from a collection. The result is an
 // unordered collection that contains no duplicate values.

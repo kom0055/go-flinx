@@ -1,6 +1,6 @@
 package flinx
 
-import "github.com/kom0055/flinx/hashset"
+import "github.com/kom0055/go-flinx/hashset"
 
 // Union produces the set union of two collections.
 //
