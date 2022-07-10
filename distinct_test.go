@@ -85,7 +85,7 @@ func TestDistinctBy(t *testing.T) {
 	}
 
 	users := []user{{1, "Foo"}, {2, "Bar"}, {3, "Foo"}}
-	want := []user{user{1, "Foo"}, user{2, "Bar"}}
+	want := []user{{1, "Foo"}, {2, "Bar"}}
 
 	distinctByFn := DistinctBy[user, string](func(u user) string {
 		return u.name
