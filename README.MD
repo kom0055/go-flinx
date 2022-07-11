@@ -81,4 +81,4 @@ FromChannel:
 | go-flink                |       1312612709 ns/op      |
 | gp-flink(from channelt) |       1975103125 ns/op       |
 
-I could make conclusion that if you chase for efficient performance and elegant grammar, go-flinx is a good choice. 
+We could make conclusion that if you chase for efficient performance and elegant grammar, go-flinx is a good choice. 
