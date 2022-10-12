@@ -14,8 +14,8 @@ func TestTake(t *testing.T) {
 
 		for _, test := range tests {
 
-			if q := Take[int](3)(FromSlice[int](test.input)); !validateQuery(q, test.output) {
-				t.Errorf("From(%v).Take(3)=%v expected %v", test.input, toSlice(q), test.output)
+			if q := Take(FromSlice(test.input), 3); !ValidateQuery(q, test.output) {
+				t.Errorf("From(%v).Take(3)=%v expected %v", test.input, ToSlice(q), test.output)
 			}
 		}
 	}
@@ -29,8 +29,8 @@ func TestTake(t *testing.T) {
 		}
 
 		for _, test := range tests {
-			if q := Take[rune](3)(FromString(test.input)); !validateQuery(q, test.output) {
-				t.Errorf("From(%v).Take(3)=%v expected %v", test.input, toSlice(q), test.output)
+			if q := Take(FromString(test.input), 3); !ValidateQuery(q, test.output) {
+				t.Errorf("From(%v).Take(3)=%v expected %v", test.input, ToSlice(q), test.output)
 			}
 		}
 	}
@@ -54,8 +54,8 @@ func TestTakeWhile(t *testing.T) {
 
 		for _, test := range tests {
 
-			if q := TakeWhile[int](test.predicate)(FromSlice[int](test.input)); !validateQuery(q, test.output) {
-				t.Errorf("From(%v).Take(3)=%v expected %v", test.input, toSlice(q), test.output)
+			if q := TakeWhile(test.predicate)(FromSlice(test.input)); !ValidateQuery(q, test.output) {
+				t.Errorf("From(%v).Take(3)=%v expected %v", test.input, ToSlice(q), test.output)
 			}
 		}
 	}
@@ -72,8 +72,8 @@ func TestTakeWhile(t *testing.T) {
 		}
 		for _, test := range tests {
 
-			if q := TakeWhile[rune](test.predicate)(FromString(test.input)); !validateQuery(q, test.output) {
-				t.Errorf("From(%v).Take(3)=%v expected %v", test.input, toSlice(q), test.output)
+			if q := TakeWhile(test.predicate)(FromString(test.input)); !ValidateQuery(q, test.output) {
+				t.Errorf("From(%v).Take(3)=%v expected %v", test.input, ToSlice(q), test.output)
 			}
 		}
 	}
@@ -97,8 +97,8 @@ func TestTakeWhileIndexed(t *testing.T) {
 
 		for _, test := range tests {
 
-			if q := TakeWhileIndexed[int](test.predicate)(FromSlice[int](test.input)); !validateQuery(q, test.output) {
-				t.Errorf("From(%v).Take(3)=%v expected %v", test.input, toSlice(q), test.output)
+			if q := TakeWhileIndexed(test.predicate)(FromSlice(test.input)); !ValidateQuery(q, test.output) {
+				t.Errorf("From(%v).Take(3)=%v expected %v", test.input, ToSlice(q), test.output)
 			}
 		}
 	}
@@ -115,8 +115,8 @@ func TestTakeWhileIndexed(t *testing.T) {
 
 		for _, test := range tests {
 
-			if q := TakeWhileIndexed[rune](test.predicate)(FromString(test.input)); !validateQuery(q, test.output) {
-				t.Errorf("From(%v).Take(3)=%v expected %v", test.input, toSlice(q), test.output)
+			if q := TakeWhileIndexed(test.predicate)(FromString(test.input)); !ValidateQuery(q, test.output) {
+				t.Errorf("From(%v).Take(3)=%v expected %v", test.input, ToSlice(q), test.output)
 			}
 		}
 	}

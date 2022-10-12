@@ -7,8 +7,8 @@ func TestIntersect(t *testing.T) {
 	input2 := []int{1, 4, 7, 9, 12, 3}
 	want := []int{1, 3}
 
-	if q := Intersect[int](FromSlice[int](input1), FromSlice[int](input2)); !validateQuery(q, want) {
-		t.Errorf("From(%v).Intersect(%v)=%v expected %v", input1, input2, toSlice(q), want)
+	if q := Intersect(FromSlice(input1), FromSlice(input2)); !ValidateQuery(q, want) {
+		t.Errorf("From(%v).Intersect(%v)=%v expected %v", input1, input2, ToSlice(q), want)
 	}
 }
 
@@ -17,9 +17,9 @@ func TestIntersectBy(t *testing.T) {
 	input2 := []int{1, 4, 7, 9, 12, 3}
 	want := []int{5, 8}
 
-	if q := IntersectBy[int, int](func(i int) int {
+	if q := IntersectBy(func(i int) int {
 		return i % 2
-	})(FromSlice[int](input1), FromSlice[int](input2)); !validateQuery(q, want) {
-		t.Errorf("From(%v).IntersectBy(%v)=%v expected %v", input1, input2, toSlice(q), want)
+	})(FromSlice(input1), FromSlice(input2)); !ValidateQuery(q, want) {
+		t.Errorf("From(%v).IntersectBy(%v)=%v expected %v", input1, input2, ToSlice(q), want)
 	}
 }

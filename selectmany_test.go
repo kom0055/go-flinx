@@ -19,8 +19,8 @@ func TestSelectMany(t *testing.T) {
 		}
 
 		for _, test := range tests {
-			if q := SelectMany[string, rune](test.selector)(FromSlice[string](test.input)); !validateQuery(q, test.output) {
-				t.Errorf("From(%v).SelectMany()=%v expected %v", test.input, toSlice(q), test.output)
+			if q := SelectMany(test.selector)(FromSlice(test.input)); !ValidateQuery(q, test.output) {
+				t.Errorf("From(%v).SelectMany()=%v expected %v", test.input, ToSlice(q), test.output)
 			}
 		}
 	}
@@ -32,13 +32,13 @@ func TestSelectMany(t *testing.T) {
 		}{
 			{[][]int{{1, 2, 3}, {4, 5, 6, 7}},
 				func(i []int) Query[int] {
-					return FromSlice[int](i)
+					return FromSlice(i)
 				}, []int{1, 2, 3, 4, 5, 6, 7}},
 		}
 
 		for _, test := range tests {
-			if q := SelectMany[[]int, int](test.selector)(FromSlice[[]int](test.input)); !validateQuery(q, test.output) {
-				t.Errorf("From(%v).SelectMany()=%v expected %v", test.input, toSlice(q), test.output)
+			if q := SelectMany(test.selector)(FromSlice(test.input)); !ValidateQuery(q, test.output) {
+				t.Errorf("From(%v).SelectMany()=%v expected %v", test.input, ToSlice(q), test.output)
 			}
 		}
 	}
@@ -61,8 +61,8 @@ func TestSelectManyIndexed(t *testing.T) {
 
 		for _, test := range tests {
 
-			if q := SelectManyIndexed[[]int, int](test.selector)(FromSlice[[]int](test.input)); !validateQuery(q, test.output) {
-				t.Errorf("From(%v).SelectManyIndexed()=%v expected %v", test.input, toSlice(q), test.output)
+			if q := SelectManyIndexed(test.selector)(FromSlice(test.input)); !ValidateQuery(q, test.output) {
+				t.Errorf("From(%v).SelectManyIndexed()=%v expected %v", test.input, ToSlice(q), test.output)
 			}
 		}
 	}
@@ -81,8 +81,8 @@ func TestSelectManyIndexed(t *testing.T) {
 
 		for _, test := range tests {
 
-			if q := SelectManyIndexed[string, rune](test.selector)(FromSlice[string](test.input)); !validateQuery(q, test.output) {
-				t.Errorf("From(%v).SelectManyIndexed()=%v expected %v", test.input, toSlice(q), test.output)
+			if q := SelectManyIndexed(test.selector)(FromSlice(test.input)); !ValidateQuery(q, test.output) {
+				t.Errorf("From(%v).SelectManyIndexed()=%v expected %v", test.input, ToSlice(q), test.output)
 			}
 		}
 	}
@@ -98,7 +98,7 @@ func TestSelectManyBy(t *testing.T) {
 		}{
 			{[][]int{{1, 2, 3}, {4, 5, 6, 7}},
 				func(i []int) Query[int] {
-					return FromSlice[int](i)
+					return FromSlice(i)
 				}, func(x int, y []int) int {
 					return x + 1
 				}, []int{2, 3, 4, 5, 6, 7, 8}},
@@ -106,8 +106,8 @@ func TestSelectManyBy(t *testing.T) {
 
 		for _, test := range tests {
 
-			if q := SelectManyBy[[]int, int, int](test.selector, test.resultSelector)(FromSlice[[]int](test.input)); !validateQuery(q, test.output) {
-				t.Errorf("From(%v).SelectManyBy()=%v expected %v", test.input, toSlice(q), test.output)
+			if q := SelectManyBy(test.selector, test.resultSelector)(FromSlice(test.input)); !ValidateQuery(q, test.output) {
+				t.Errorf("From(%v).SelectManyBy()=%v expected %v", test.input, ToSlice(q), test.output)
 			}
 		}
 	}
@@ -128,8 +128,8 @@ func TestSelectManyBy(t *testing.T) {
 		}
 
 		for _, test := range tests {
-			if q := SelectManyBy[string, rune, string](test.selector, test.resultSelector)(FromSlice[string](test.input)); !validateQuery(q, test.output) {
-				t.Errorf("From(%v).SelectManyBy()=%v expected %v", test.input, toSlice(q), test.output)
+			if q := SelectManyBy(test.selector, test.resultSelector)(FromSlice(test.input)); !ValidateQuery(q, test.output) {
+				t.Errorf("From(%v).SelectManyBy()=%v expected %v", test.input, ToSlice(q), test.output)
 			}
 		}
 	}
@@ -146,17 +146,17 @@ func TestSelectManyIndexedBy(t *testing.T) {
 			{[][]int{{1, 2, 3}, {4, 5, 6, 7}},
 				func(i int, x []int) Query[int] {
 					if i == 0 {
-						return FromSlice[int]([]int{10, 20, 30})
+						return FromSlice([]int{10, 20, 30})
 					}
-					return FromSlice[int](x)
+					return FromSlice(x)
 				}, func(x int, y []int) int {
 					return x + 1
 				}, []int{11, 21, 31, 5, 6, 7, 8}},
 		}
 
 		for _, test := range tests {
-			if q := SelectManyByIndexed[[]int, int, int](test.selector, test.resultSelector)(FromSlice[[]int](test.input)); !validateQuery(q, test.output) {
-				t.Errorf("From(%v).SelectManyIndexedBy()=%v expected %v", test.input, toSlice(q), test.output)
+			if q := SelectManyByIndexed(test.selector, test.resultSelector)(FromSlice(test.input)); !ValidateQuery(q, test.output) {
+				t.Errorf("From(%v).SelectManyIndexedBy()=%v expected %v", test.input, ToSlice(q), test.output)
 			}
 		}
 	}
@@ -181,8 +181,8 @@ func TestSelectManyIndexedBy(t *testing.T) {
 
 		for _, test := range tests {
 
-			if q := SelectManyByIndexed[string, rune, string](test.selector, test.resultSelector)(FromSlice[string](test.input)); !validateQuery(q, test.output) {
-				t.Errorf("From(%v).SelectManyIndexedBy()=%v expected %v", test.input, toSlice(q), test.output)
+			if q := SelectManyByIndexed(test.selector, test.resultSelector)(FromSlice(test.input)); !ValidateQuery(q, test.output) {
+				t.Errorf("From(%v).SelectManyIndexedBy()=%v expected %v", test.input, ToSlice(q), test.output)
 			}
 		}
 	}

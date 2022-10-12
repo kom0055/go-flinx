@@ -1,8 +1,9 @@
 package flinx
 
 import (
-	"gotest.tools/v3/assert"
 	"testing"
+
+	"gotest.tools/v3/assert"
 )
 
 func TestDistinct(t *testing.T) {
@@ -16,8 +17,8 @@ func TestDistinct(t *testing.T) {
 		}
 
 		for _, test := range tests {
-			if q := Distinct[int](FromSlice[int](test.input)); !validateQuery[int](q, test.output) {
-				t.Errorf("From(%v).Distinct()=%v expected %v", test.input, toSlice(q), test.output)
+			if q := Distinct(FromSlice(test.input)); !ValidateQuery(q, test.output) {
+				t.Errorf("From(%v).Distinct()=%v expected %v", test.input, ToSlice(q), test.output)
 			}
 		}
 	}
@@ -26,8 +27,8 @@ func TestDistinct(t *testing.T) {
 
 		input := "sstr"
 		output := []rune{'s', 't', 'r'}
-		if q := Distinct[rune](FromString(input)); !validateQuery[rune](q, output) {
-			t.Errorf("From(%v).Distinct()=%v expected %v", input, toSlice(q), output)
+		if q := Distinct(FromString(input)); !ValidateQuery(q, output) {
+			t.Errorf("From(%v).Distinct()=%v expected %v", input, ToSlice(q), output)
 		}
 	}
 
@@ -42,19 +43,18 @@ func TestDistinctForOrderedQuery(t *testing.T) {
 			{[]int{1, 2, 2, 3, 1}, []int{1, 2, 3}},
 			{[]int{1, 1, 1, 2, 1, 2, 3, 4, 2}, []int{1, 2, 3, 4}},
 		}
-		distinctFn := Distinct[int]
-		orderByFn := OrderBy[int](func(i, j int) int {
+		orderByFn := OrderBy(func(i, j int) int {
 			return i - j
 		}, func(i int) int { return i })
 		for _, test := range tests {
-			if q := distinctFn(FromSlice[int](test.input)); !validateQuery[int](q, test.output) {
-				t.Errorf("From(%v).Distinct()=%v expected %v", test.input, toSlice(q), test.output)
+			if q := Distinct(FromSlice(test.input)); !ValidateQuery(q, test.output) {
+				t.Errorf("From(%v).Distinct()=%v expected %v", test.input, ToSlice(q), test.output)
 			}
 		}
 		for _, test := range tests {
 
-			if q := orderByFn(distinctFn(FromSlice[int](test.input))).Query; !validateQuery[int](q, test.output) {
-				t.Errorf("From(%v).Distinct()=%v expected %v", test.input, toSlice(q), test.output)
+			if q := orderByFn(Distinct(FromSlice(test.input))).Query; !ValidateQuery(q, test.output) {
+				t.Errorf("From(%v).Distinct()=%v expected %v", test.input, ToSlice(q), test.output)
 			}
 
 		}
@@ -62,15 +62,14 @@ func TestDistinctForOrderedQuery(t *testing.T) {
 
 	{
 
-		distinctFn := Distinct[rune]
-		orderByFn := OrderBy[rune](func(i, j rune) int {
+		orderByFn := OrderBy(func(i, j rune) int {
 			return int(i - j)
 		}, func(i rune) rune { return i })
 
 		input := "sstr"
 		output := []rune{'r', 's', 't'}
 
-		str := ToString(orderByFn(distinctFn(FromString(input))).Query)
+		str := ToString(orderByFn(Distinct(FromString(input))).Query)
 		expect := string(output)
 		assert.Equal(t, expect, str)
 
@@ -87,10 +86,10 @@ func TestDistinctBy(t *testing.T) {
 	users := []user{{1, "Foo"}, {2, "Bar"}, {3, "Foo"}}
 	want := []user{{1, "Foo"}, {2, "Bar"}}
 
-	distinctByFn := DistinctBy[user, string](func(u user) string {
+	distinctByFn := DistinctBy(func(u user) string {
 		return u.name
 	})
-	if q := distinctByFn(FromSlice[user](users)); !validateQuery[user](q, want) {
-		t.Errorf("From(%v).DistinctBy()=%v expected %v", users, toSlice(q), want)
+	if q := distinctByFn(FromSlice(users)); !ValidateQuery(q, want) {
+		t.Errorf("From(%v).DistinctBy()=%v expected %v", users, ToSlice(q), want)
 	}
 }

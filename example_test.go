@@ -2,18 +2,18 @@ package flinx
 
 import (
 	"fmt"
-	"github.com/kom0055/go-flinx/generics"
-	"gotest.tools/v3/assert"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/kom0055/go-flinx/generics"
+	"gotest.tools/v3/assert"
 )
 
 func Test_ExampleKeyValue(t *testing.T) {
 	m := make(map[int]bool)
 	m[10] = true
-	resultFn := Results[KeyValue[int, bool]]
-	assert.DeepEqual(t, resultFn(FromMap[int, bool](m)), []KeyValue[int, bool]{{10, true}})
+	assert.DeepEqual(t, Results(FromMap(m)), []KeyValue[int, bool]{{10, true}})
 	// Output:
 	// [{10 true}]
 }
@@ -23,7 +23,7 @@ func TestExampleKeyValue_second(t *testing.T) {
 		{10, true},
 	}
 
-	m := ToMap[int, bool](FromSlice[KeyValue[int, bool]](input))
+	m := ToMap(FromSlice(input))
 
 	assert.DeepEqual(t, m, map[int]bool{10: true})
 	// Output:
@@ -35,7 +35,7 @@ func TestExampleKeyValue_second(t *testing.T) {
 func TestExampleRange(t *testing.T) {
 	// Generate a slice of integers from 1 to 10
 	// and then select their squares.
-	squares := ToSlice[int](Select[int, int](func(x int) int { return x * x })(Range(1, 10)))
+	squares := ToSlice(Select(func(x int) int { return x * x })(Range(1, 10)))
 
 	assert.DeepEqual(t, squares, []int{1, 4, 9, 16, 25, 36, 49, 64, 81, 100})
 
@@ -55,7 +55,7 @@ func TestExampleRange(t *testing.T) {
 // The following code example demonstrates how to use Repeat
 // to generate a slice of a repeated value.
 func TestExampleRepeat(t *testing.T) {
-	slice := ToSlice[string](Repeat[string]("I like programming.", 5))
+	slice := ToSlice(Repeat("I like programming.", 5))
 
 	assert.DeepEqual(t, slice,
 		[]string{"I like programming.", "I like programming.", "I like programming.",
@@ -71,11 +71,11 @@ func TestExampleRepeat(t *testing.T) {
 }
 
 func TestExampleQuery(t *testing.T) {
-	query := Where[int](func(i int) bool {
+	query := Where(func(i int) bool {
 		return i <= 3
-	})(FromSlice[int]([]int{1, 2, 3, 4, 5}))
+	})(FromSlice([]int{1, 2, 3, 4, 5}))
 
-	slice := ToSlice[int](query)
+	slice := ToSlice(query)
 	assert.DeepEqual(t, slice, []int{1, 2, 3})
 
 	// Output:
@@ -87,14 +87,14 @@ func TestExampleQuery(t *testing.T) {
 // The following code example demonstrates how to use Aggregate function
 func TestExampleQuery_Aggregate(t *testing.T) {
 	fruits := []string{"apple", "mango", "orange", "passionfruit", "grape"}
-	aggreFn := Aggregate[string](func(r, i string) string {
+	aggreFn := Aggregate(func(r, i string) string {
 		if len(r) > len(i) {
 			return r
 		}
 		return i
 	})
 	// Determine which string in the slice is the longest.
-	longestName := aggreFn(FromSlice[string](fruits))
+	longestName := aggreFn(FromSlice(fruits))
 	assert.DeepEqual(t, longestName, "passionfruit")
 	// Output:
 	// passionfruit
@@ -103,14 +103,14 @@ func TestExampleQuery_Aggregate(t *testing.T) {
 // The following code example demonstrates how to use AggregateWithSeed function
 func TestExampleQuery_AggregateWithSeed(t *testing.T) {
 	ints := []int{4, 8, 8, 3, 9, 0, 7, 8, 2}
-	aggreFn := AggregateWithSeed[int](0, func(total, next int) int {
+	aggreFn := AggregateWithSeed(0, func(total, next int) int {
 		if next%2 == 0 {
 			return total + 1
 		}
 		return total
 	})
 	// Count the even numbers in the array, using a seed value of 0.
-	numEven := aggreFn(FromSlice[int](ints))
+	numEven := aggreFn(FromSlice(ints))
 	assert.DeepEqual(t, numEven, 6)
 	// Output:
 	// The number of even integers is: 6
@@ -119,7 +119,7 @@ func TestExampleQuery_AggregateWithSeed(t *testing.T) {
 // The following code example demonstrates how to use AggregateWithSeedBy function
 func TestExampleQuery_AggregateWithSeedBy(t *testing.T) {
 	input := []string{"apple", "mango", "orange", "passionfruit", "grape"}
-	aggreFn := AggregateWithSeedBy[string, string]("banana", func(longest, next string) string {
+	aggreFn := AggregateWithSeedBy("banana", func(longest, next string) string {
 		if len(longest) > len(next) {
 			return longest
 		}
@@ -129,7 +129,7 @@ func TestExampleQuery_AggregateWithSeedBy(t *testing.T) {
 		return fmt.Sprintf("The fruit with the longest name is %s.", result)
 	})
 	// Determine whether any string in the array is longer than "banana".
-	longestName := aggreFn(FromSlice[string](input))
+	longestName := aggreFn(FromSlice(input))
 	assert.DeepEqual(t, longestName, "The fruit with the longest name is passionfruit.")
 	// Output:
 	// The fruit with the longest name is passionfruit.
@@ -139,12 +139,11 @@ func TestExampleQuery_AggregateWithSeedBy(t *testing.T) {
 // use Distinct to return distinct elements from a slice of integers.
 func TestExampleOrderedQuery_Distinct(t *testing.T) {
 	ages := []int{21, 46, 46, 55, 17, 21, 55, 55}
-	distinctFn := Distinct[int]
-	orderByFn := OrderBy[int, int](generics.NumericCompare[int], func(i int) int {
+	orderByFn := OrderBy(generics.NumericCompare[int], func(i int) int {
 		return i
 	})
 
-	distinctAges := ToSlice[int](distinctFn(orderByFn(FromSlice[int](ages)).Query))
+	distinctAges := ToSlice(Distinct(orderByFn(FromSlice(ages)).Query))
 	assert.DeepEqual(t, distinctAges, []int{17, 21, 46, 55})
 	// Output:
 	// [17 21 46 55]
@@ -165,16 +164,16 @@ func TestExampleOrderedQuery_DistinctBy(t *testing.T) {
 		{Name: "apple", Code: 9},
 	}
 
-	distinctByFn := DistinctBy[Product, int](func(item Product) int {
+	distinctByFn := DistinctBy(func(item Product) int {
 		return item.Code
 	})
-	orderByFn := OrderBy[Product, string](
+	orderByFn := OrderBy(
 		strings.Compare, func(item Product) string {
 			return item.Name
 		},
 	)
 	//Order and exclude duplicates.
-	noduplicates := ToSlice[Product](distinctByFn(orderByFn(FromSlice[Product](products)).Query))
+	noduplicates := ToSlice(distinctByFn(orderByFn(FromSlice(products)).Query))
 
 	assert.DeepEqual(t, noduplicates, []Product{{Name: "apple", Code: 9}, {Name: "lemon", Code: 12}, {Name: "orange", Code: 4}})
 
@@ -192,13 +191,13 @@ func TestExampleOrderedQuery_ThenBy(t *testing.T) {
 	// Sort the strings first by their length and then
 	//alphabetically by passing the identity selector function.
 
-	thenByFn := ThenBy[string, string](strings.Compare, func(fruit string) string {
+	thenByFn := ThenBy(strings.Compare, func(fruit string) string {
 		return fruit
 	})
-	orderByFn := OrderBy[string, int](generics.NumericCompare[int], func(fruit string) int {
+	orderByFn := OrderBy(generics.NumericCompare[int], func(fruit string) int {
 		return len(fruit)
 	})
-	query := ToSlice[string](thenByFn(orderByFn(FromSlice[string](fruits))).Query)
+	query := ToSlice(thenByFn(orderByFn(FromSlice(fruits))).Query)
 	assert.DeepEqual(t, query, []string{"apple", "grape", "mango", "banana", "orange", "blueberry", "raspberry", "passionfruit"})
 
 	// Output:
@@ -231,7 +230,7 @@ func TestExampleQuery_All(t *testing.T) {
 
 	// Determine whether all pet names
 	// in the array start with 'B'.
-	allStartWithB := All[Pet](func(pet Pet) bool { return strings.HasPrefix(pet.Name, "B") })(FromSlice[Pet](pets))
+	allStartWithB := All(func(pet Pet) bool { return strings.HasPrefix(pet.Name, "B") })(FromSlice(pets))
 	assert.DeepEqual(t, allStartWithB, false)
 	// Output:
 	//
@@ -244,7 +243,7 @@ func TestExampleQuery_Any(t *testing.T) {
 
 	numbers := []int{1, 2}
 
-	hasElements := Any[int](FromSlice[int](numbers))
+	hasElements := Any(FromSlice(numbers))
 	assert.DeepEqual(t, hasElements, true)
 	// Output:
 	// Are there any element in the list? true
@@ -267,7 +266,7 @@ func TestExampleQuery_AnyWith(t *testing.T) {
 	}
 
 	// Determine whether any pets over age 1 are also unvaccinated.
-	unvaccinated := AnyWith[Pet](func(p Pet) bool { return p.Age > 1 && p.Vaccinated == false })(FromSlice[Pet](pets))
+	unvaccinated := AnyWith(func(p Pet) bool { return p.Age > 1 && p.Vaccinated == false })(FromSlice(pets))
 	assert.DeepEqual(t, unvaccinated, true)
 	// Output:
 	//
@@ -279,20 +278,20 @@ func TestExampleQuery_AnyWith(t *testing.T) {
 func TestExampleQuery_Append(t *testing.T) {
 	input := []int{1, 2, 3, 4}
 
-	q := Append[int](5)(FromSlice[int](input))
+	q := Append(FromSlice(input), 5)
 
-	last, _ := Last[int](q)
+	last, _ := Last(q)
 	assert.DeepEqual(t, last, 5)
 	// Output:
 	// 5
 }
 
-//The following code example demonstrates how to use Average
-//to calculate the average of a slice of values.
+// The following code example demonstrates how to use Average
+// to calculate the average of a slice of values.
 func TestExampleQuery_Average(t *testing.T) {
 	grades := []int{78, 92, 100, 37, 81}
 
-	average := Average[int](FromSlice[int](grades))
+	average := Average(FromSlice(grades))
 
 	assert.DeepEqual(t, average, 77.6)
 	// Output:
@@ -303,7 +302,7 @@ func TestExampleQuery_Average(t *testing.T) {
 // to count the elements in an array.
 func TestExampleQuery_Count(t *testing.T) {
 	fruits := []string{"apple", "banana", "mango", "orange", "passionfruit", "grape"}
-	numberOfFruits := Count[string](FromSlice[string](fruits))
+	numberOfFruits := Count(FromSlice(fruits))
 	assert.DeepEqual(t, numberOfFruits, 6)
 	// Output:
 	// 6
@@ -314,19 +313,19 @@ func TestExampleQuery_Count(t *testing.T) {
 func TestExampleQuery_Contains(t *testing.T) {
 	slice := []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
 
-	has5 := Contains[int](5)(FromSlice[int](slice))
+	has5 := Contains(5)(FromSlice(slice))
 
 	assert.DeepEqual(t, has5, true)
 	// Output:
 	// Does the slice contains 5? true
 }
 
-//The following code example demonstrates how to use CountWith
-//to count the even numbers in an array.
+// The following code example demonstrates how to use CountWith
+// to count the even numbers in an array.
 func TestExampleQuery_CountWith(t *testing.T) {
 	slice := []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
 
-	evenCount := CountWith[int](func(item int) bool { return item%2 == 0 })(FromSlice[int](slice))
+	evenCount := CountWith(func(item int) bool { return item%2 == 0 })(FromSlice(slice))
 	assert.DeepEqual(t, evenCount, 6)
 	// Output:
 	// 6
@@ -373,22 +372,22 @@ func TestExampleQuery_DefaultIfEmpty(t *testing.T) {
 	people := []Person{magnus, terry, charlotte, arlene}
 	pets := []Pet{barley, boots, whiskers, bluemoon, daisy}
 
-	groupJoinFn := GroupJoin[Person, Pet, Group[Person, Pet], Person](func(person Person) Person { return person },
+	groupJoinFn := GroupJoin(func(person Person) Person { return person },
 		func(pet Pet) Person { return pet.Owner },
 		func(person Person, pets []Pet) Group[Person, Pet] {
-			return Group[Person, Pet]{Key: person, Group: Results[Pet](FromSlice[Pet](pets))}
+			return Group[Person, Pet]{Key: person, Group: Results(FromSlice(pets))}
 		})
 
-	selectManyByFn := SelectManyBy[Group[Person, Pet], Pet, string](
+	selectManyByFn := SelectManyBy(
 		func(g Group[Person, Pet]) Query[Pet] {
-			return DefaultIfEmpty[Pet](Pet{})(FromSlice[Pet](g.Group))
+			return DefaultIfEmpty(FromSlice(g.Group), Pet{})
 		},
 		func(pet Pet, group Group[Person, Pet]) string {
 			return fmt.Sprintf("%s: %s", group.Key.FirstName, pet.Name)
 		},
 	)
-	//(FromSlice[Person](people),FromSlice[Pet](pets))
-	results := ToSlice[string](selectManyByFn(groupJoinFn(FromSlice[Person](people), FromSlice[Pet](pets))))
+	//(FromSlice(people),FromSlice(pets))
+	results := ToSlice(selectManyByFn(groupJoinFn(FromSlice(people), FromSlice(pets))))
 
 	assert.DeepEqual(t, results, []string{"Magnus: Daisy", "Terry: Barley", "Terry: Boots",
 		"Terry: Blue Moon", "Charlotte: Whiskers", "Arlene: "})
@@ -403,12 +402,12 @@ func TestExampleQuery_DefaultIfEmpty(t *testing.T) {
 
 }
 
-//The following code example demonstrates how to use Distinct
-//to return distinct elements from a slice of integers.
+// The following code example demonstrates how to use Distinct
+// to return distinct elements from a slice of integers.
 func TestExampleQuery_Distinct(t *testing.T) {
 	ages := []int{21, 46, 46, 55, 17, 21, 55, 55}
 
-	distinctAges := ToSlice[int](Distinct[int](FromSlice[int](ages)))
+	distinctAges := ToSlice(Distinct(FromSlice(ages)))
 
 	assert.DeepEqual(t, distinctAges, []int{21, 46, 55, 17})
 	// Output:
@@ -431,7 +430,7 @@ func TestExampleQuery_DistinctBy(t *testing.T) {
 	}
 
 	//Order and exclude duplicates.
-	noduplicates := ToSlice[Product](DistinctBy[Product, int](func(item Product) int { return item.Code })(FromSlice[Product](products)))
+	noduplicates := ToSlice(DistinctBy(func(item Product) int { return item.Code })(FromSlice(products)))
 
 	assert.DeepEqual(t, noduplicates, []Product{{Name: "orange", Code: 4},
 		{Name: "apple", Code: 9}, {Name: "lemon", Code: 12}})
@@ -450,7 +449,7 @@ func TestExampleQuery_Except(t *testing.T) {
 	numbers1 := []float32{2.0, 2.1, 2.2, 2.3, 2.4, 2.5}
 	numbers2 := []float32{2.2}
 
-	onlyInFirstSet := ToSlice[float32](Except[float32](FromSlice[float32](numbers1), FromSlice[float32](numbers2)))
+	onlyInFirstSet := ToSlice(Except(FromSlice(numbers1), FromSlice(numbers2)))
 
 	assert.DeepEqual(t, onlyInFirstSet, []float32{2, 2.1, 2.3, 2.4, 2.5})
 
@@ -484,9 +483,9 @@ func TestExampleQuery_ExceptBy(t *testing.T) {
 	}
 
 	//Order and exclude duplicates.
-	except := ToSlice[Product](ExceptBy[Product, int](func(item Product) int {
+	except := ToSlice(ExceptBy(func(item Product) int {
 		return item.Code
-	})(FromSlice[Product](fruits1), FromSlice[Product](fruits2)))
+	})(FromSlice(fruits1), FromSlice(fruits2)))
 
 	assert.DeepEqual(t, except, []Product{{Name: "orange", Code: 4}, {Name: "lemon", Code: 12}})
 
@@ -500,7 +499,7 @@ func TestExampleQuery_ExceptBy(t *testing.T) {
 // to return the first element of an array.
 func TestExampleQuery_First(t *testing.T) {
 	numbers := []int{9, 34, 65, 92, 87, 435, 3, 54, 83, 23, 87, 435, 67, 12, 19}
-	n, _ := First[int](FromSlice[int](numbers))
+	n, _ := First(FromSlice(numbers))
 	assert.DeepEqual(t, n, 9)
 
 	// Output:
@@ -508,11 +507,11 @@ func TestExampleQuery_First(t *testing.T) {
 
 }
 
-//The following code example demonstrates how to use FirstWith
+// The following code example demonstrates how to use FirstWith
 // to return the first element of an array that satisfies a condition.
 func TestExampleQuery_FirstWith(t *testing.T) {
 	numbers := []int{9, 34, 65, 92, 87, 435, 3, 54, 83, 23, 87, 435, 67, 12, 19}
-	first, _ := FirstWith[int](func(item int) bool { return item > 80 })(FromSlice[int](numbers))
+	first, _ := FirstWith(func(item int) bool { return item > 80 })(FromSlice(numbers))
 
 	assert.DeepEqual(t, first, 92)
 	// Output:
@@ -520,13 +519,13 @@ func TestExampleQuery_FirstWith(t *testing.T) {
 
 }
 
-//The following code example demonstrates how to use Intersect
-//to return the elements that appear in each of two slices of integers.
+// The following code example demonstrates how to use Intersect
+// to return the elements that appear in each of two slices of integers.
 func TestExampleQuery_Intersect(t *testing.T) {
 	id1 := []int{44, 26, 92, 30, 71, 38}
 	id2 := []int{39, 59, 83, 47, 26, 4, 30}
 
-	both := ToSlice[int](Intersect[int](FromSlice[int](id1), FromSlice[int](id2)))
+	both := ToSlice(Intersect(FromSlice(id1), FromSlice(id2)))
 
 	assert.DeepEqual(t, both, []int{26, 30})
 
@@ -536,8 +535,8 @@ func TestExampleQuery_Intersect(t *testing.T) {
 
 }
 
-//The following code example demonstrates how to use IntersectBy
-//to return the elements that appear in each of two slices of products with same Code.
+// The following code example demonstrates how to use IntersectBy
+// to return the elements that appear in each of two slices of products with same Code.
 func TestExampleQuery_IntersectBy(t *testing.T) {
 	type Product struct {
 		Name string
@@ -554,9 +553,9 @@ func TestExampleQuery_IntersectBy(t *testing.T) {
 		{Name: "apple", Code: 9},
 	}
 
-	duplicates := ToSlice[Product](IntersectBy[Product, int](func(p Product) int {
+	duplicates := ToSlice(IntersectBy(func(p Product) int {
 		return p.Code
-	})(FromSlice[Product](store1), FromSlice[Product](store2)))
+	})(FromSlice(store1), FromSlice(store2)))
 
 	assert.DeepEqual(t, duplicates, []Product{{Name: "apple", Code: 9}})
 
@@ -571,7 +570,7 @@ func TestExampleQuery_Last(t *testing.T) {
 	numbers := []int{9, 34, 65, 92, 87, 435, 3, 54,
 		83, 23, 87, 67, 12, 19}
 
-	last, _ := Last[int](FromSlice[int](numbers))
+	last, _ := Last(FromSlice(numbers))
 	assert.DeepEqual(t, last, 19)
 
 	//Output:
@@ -585,7 +584,7 @@ func TestExampleQuery_LastWith(t *testing.T) {
 	numbers := []int{9, 34, 65, 92, 87, 435, 3, 54,
 		83, 23, 87, 67, 12, 19}
 
-	last, _ := LastWith[int](func(n int) bool { return n > 80 })(FromSlice[int](numbers))
+	last, _ := LastWith(func(n int) bool { return n > 80 })(FromSlice(numbers))
 
 	assert.DeepEqual(t, last, 87)
 
@@ -599,9 +598,9 @@ func TestExampleQuery_LastWith(t *testing.T) {
 func TestExampleQuery_Max(t *testing.T) {
 	numbers := []int64{4294967296, 466855135, 81125}
 
-	last, _ := Max[int64](func(i, j int64) int {
+	last, _ := Max(func(i, j int64) int {
 		return int(i - j)
-	})(FromSlice[int64](numbers))
+	})(FromSlice(numbers))
 
 	assert.DeepEqual(t, last, int64(4294967296))
 	//Output:
@@ -614,9 +613,9 @@ func TestExampleQuery_Max(t *testing.T) {
 func TestExampleQuery_Min(t *testing.T) {
 	grades := []int{78, 92, 99, 37, 81}
 
-	min, _ := Min[int](func(i, j int) int {
+	min, _ := Min(func(i, j int) int {
 		return i - j
-	})(FromSlice[int](grades))
+	})(FromSlice(grades))
 
 	assert.DeepEqual(t, min, 37)
 
@@ -630,9 +629,9 @@ func TestExampleQuery_Min(t *testing.T) {
 func TestExampleQuery_OrderByDescending(t *testing.T) {
 	names := []string{"Ned", "Ben", "Susan"}
 
-	result := ToSlice[string](OrderByDescending[string, string](
-		strings.Compare, getSelf[string],
-	)(FromSlice[string](names)).Query)
+	result := ToSlice(OrderByDescending(
+		strings.Compare, Self[string],
+	)(FromSlice(names)).Query)
 
 	assert.DeepEqual(t, result, []string{"Susan", "Ned", "Ben"})
 	// Output:
@@ -642,24 +641,25 @@ func TestExampleQuery_OrderByDescending(t *testing.T) {
 // The following code example demonstrates how to use ThenByDescending to perform
 // a secondary ordering of the elements in a slice in descending order.
 func TestExampleOrderedQuery_ThenByDescending(t *testing.T) {
+
 	fruits := []string{"apPLe", "baNanA", "apple", "APple", "orange", "BAnana", "ORANGE", "apPLE"}
 
 	// Sort the strings first ascending by their length and
 	// then descending using a custom case insensitive comparer.
 
-	query := ToSlice[string](ThenByDescending[string, byte](generics.NumericCompare[byte], func(i string) byte {
+	query := ToSlice(ThenByDescending(generics.NumericCompare[byte], func(i string) byte {
 
 		return i[0]
-	})(OrderBy[string, int](generics.NumericCompare[int], func(i string) int {
+	})(OrderBy(generics.NumericCompare[int], func(i string) int {
 		return len(i)
-	})(FromSlice[string](fruits))).Query)
+	})(FromSlice(fruits))).Query)
 
-	assert.DeepEqual(t, query, []string{"apPLe", "apPLE", "apple", "APple", "orange", "baNanA", "ORANGE", "BAnana"})
+	assert.DeepEqual(t, query, []string{"apPLe", "apple", "apPLE", "APple", "orange", "baNanA", "ORANGE", "BAnana"})
 
 	// Output:
 	// apPLe
-	// apPLE
 	// apple
+	// apPLE
 	// APple
 	// orange
 	// baNanA
@@ -671,7 +671,7 @@ func TestExampleOrderedQuery_ThenByDescending(t *testing.T) {
 // The following code example demonstrates how to use Concat
 // to concatenate two slices.
 func TestExampleQuery_Concat(t *testing.T) {
-	assert.DeepEqual(t, Results[int](Concat[int](FromSlice[int]([]int{1, 2, 3}), FromSlice[int]([]int{4, 5, 6}))),
+	assert.DeepEqual(t, Results(Concat(FromSlice([]int{1, 2, 3}), FromSlice([]int{4, 5, 6}))),
 		[]int{1, 2, 3, 4, 5, 6})
 	// Output:
 	// [1 2 3 4 5 6]
@@ -679,13 +679,13 @@ func TestExampleQuery_Concat(t *testing.T) {
 
 func TestExampleQuery_GroupBy(t *testing.T) {
 	input := []int{1, 2, 3, 4, 5, 6, 7, 8, 9}
-	res := Results[Group[int, int]](OrderBy[Group[int, int], int](func(i, j int) int {
+	res := Results(OrderBy(func(i, j int) int {
 		return i - j
 	}, func(g Group[int, int]) int {
 		return g.Key
-	})(GroupBy[int, int](func(i int) int { return i % 2 }, func(i int) int {
+	})(GroupBy(func(i int) int { return i % 2 }, func(i int) int {
 		return i
-	})(FromSlice[int](input))).Query)
+	})(FromSlice(input))).Query)
 	assert.DeepEqual(t, res,
 		[]Group[int, int]{{Key: 0, Group: []int{2, 4, 6, 8}}, {Key: 1, Group: []int{1, 3, 5, 7, 9}}})
 
@@ -703,13 +703,13 @@ func TestExampleQuery_GroupJoin(t *testing.T) {
 		"cherry",
 		"clementine",
 	}
-	res := Results[KeyValue[rune, []string]](GroupJoin[rune, string, KeyValue[rune, []string], rune](
+	res := Results(GroupJoin(
 		func(i rune) rune { return i },
 		func(i string) rune { return []rune(i)[0] },
 		func(outer rune, inners []string) KeyValue[rune, []string] {
 			return KeyValue[rune, []string]{outer, inners}
 		},
-	)(FromString("abc"), FromSlice[string](fruits)))
+	)(FromString("abc"), FromSlice(fruits)))
 	assert.DeepEqual(t, res,
 		[]KeyValue[rune, []string]{{Key: 'a', Value: []string{"apple", "apricot"}},
 			{Key: 'b', Value: []string{"banana"}},
@@ -745,9 +745,9 @@ func TestExampleQuery_IndexOf(t *testing.T) {
 		},
 	}
 
-	index := IndexOf[Item](func(item Item) bool {
+	index := IndexOf(func(item Item) bool {
 		return item.Name == "Rickster"
-	})(FromSlice[Item](items))
+	})(FromSlice(items))
 	assert.DeepEqual(t, index, 2)
 
 	if index >= 0 {
@@ -771,17 +771,17 @@ func TestExampleQuery_Join(t *testing.T) {
 	}
 
 	q :=
-		Join[int, string, KeyValue[int, string], int](
-			getSelf[int],
+		Join(
+			Self[int],
 			func(i string) int {
 				return len(i)
 			},
 			func(outer int, inner string) KeyValue[int, string] {
 				return KeyValue[int, string]{outer, inner}
 			},
-		)(Range(1, 10), FromSlice[string](fruits))
+		)(Range(1, 10), FromSlice(fruits))
 
-	assert.DeepEqual(t, Results[KeyValue[int, string]](q), []KeyValue[int, string]{
+	assert.DeepEqual(t, Results(q), []KeyValue[int, string]{
 		{Key: 5, Value: "apple"}, {Key: 6, Value: "banana"}, {Key: 6, Value: "cherry"},
 		{Key: 7, Value: "apricot"}, {Key: 10, Value: "clementine"},
 	})
@@ -793,17 +793,17 @@ func TestExampleQuery_Join(t *testing.T) {
 // to sort the elements of a slice.
 func TestExampleQuery_OrderBy(t *testing.T) {
 
-	q := ThenByDescending[int](
+	q := ThenByDescending(
 		generics.NumericCompare[int],
-		getSelf[int],
-	)(OrderBy[int, int](
+		Self[int],
+	)(OrderBy(
 		generics.NumericCompare[int],
 		func(v int) int {
 			return v % 2
 		},
 	)(Range(1, 10)))
 
-	assert.DeepEqual(t, Results[int](q.Query), []int{10, 8, 6, 4, 2, 9, 7, 5, 3, 1})
+	assert.DeepEqual(t, Results(q.Query), []int{10, 8, 6, 4, 2, 9, 7, 5, 3, 1})
 	// Output:
 	// [10 8 6 4 2 9 7 5 3 1]
 }
@@ -813,7 +813,7 @@ func TestExampleQuery_OrderBy(t *testing.T) {
 func TestExampleQuery_Prepend(t *testing.T) {
 	input := []int{2, 3, 4, 5}
 
-	first, _ := First[int](Prepend[int](1)(FromSlice[int](input)))
+	first, _ := First(Prepend(FromSlice(input), 1))
 	assert.DeepEqual(t, first, 1)
 	// Output:
 	// 1
@@ -824,7 +824,7 @@ func TestExampleQuery_Prepend(t *testing.T) {
 func TestExampleQuery_Reverse(t *testing.T) {
 	input := "apple"
 
-	output := ToSlice[rune](Reverse[rune](FromString(input)))
+	output := ToSlice(Reverse(FromString(input)))
 	assert.DeepEqual(t, string(output), "elppa")
 
 	// Output:
@@ -834,7 +834,7 @@ func TestExampleQuery_Reverse(t *testing.T) {
 // The following code example demonstrates how to use Select
 // to project over a slice of values.
 func TestExampleQuery_Select(t *testing.T) {
-	squares := ToSlice[int](Select[int, int](func(x int) int {
+	squares := ToSlice(Select(func(x int) int {
 		return x * x
 	})(Range(1, 10)))
 
@@ -846,9 +846,9 @@ func TestExampleQuery_Select(t *testing.T) {
 func TestExampleQuery_SelectMany(t *testing.T) {
 	input := [][]int{{1, 2, 3}, {4, 5, 6, 7}}
 
-	res := Results[int](SelectMany[[]int, int](func(i []int) Query[int] {
-		return FromSlice[int](i)
-	})(FromSlice[[]int](input)))
+	res := Results(SelectMany(func(i []int) Query[int] {
+		return FromSlice(i)
+	})(FromSlice(input)))
 
 	assert.DeepEqual(t, res, []int{1, 2, 3, 4, 5, 6, 7})
 	// Output:
@@ -860,9 +860,9 @@ func TestExampleQuery_SelectMany(t *testing.T) {
 func TestExampleQuery_SelectIndexed(t *testing.T) {
 	fruits := []string{"apple", "banana", "mango", "orange", "passionfruit", "grape"}
 
-	result := ToSlice[string](SelectIndexed[string, string](func(i int, s string) string {
+	result := ToSlice(SelectIndexed(func(i int, s string) string {
 		return s[:i]
-	})(FromSlice[string](fruits)))
+	})(FromSlice(fruits)))
 
 	assert.DeepEqual(t, result, []string{"", "b", "ma", "ora", "pass", "grape"})
 	// Output:
@@ -898,17 +898,17 @@ func TestExampleQuery_SelectManyByIndexed(t *testing.T) {
 
 	people := []Person{magnus, terry, charlotte}
 
-	results := ToSlice[string](SelectManyByIndexed[Person, string, string](
+	results := ToSlice(SelectManyByIndexed(
 		func(i int, p Person) Query[string] {
-			return Select[Pet, string](func(pet Pet) string {
+			return Select(func(pet Pet) string {
 				return fmt.Sprintf("%d - %s", i, pet.Name)
-			})(FromSlice[Pet](p.Pets))
+			})(FromSlice(p.Pets))
 		},
 
 		func(pet string, person Person) string {
 			return fmt.Sprintf("Pet: %s, Owner: %s", pet, person.Name)
 		},
-	)(FromSlice[Person](people)))
+	)(FromSlice(people)))
 
 	assert.DeepEqual(t, results, []string{"Pet: 0 - Daisy, Owner: Hedlund, Magnus",
 		"Pet: 1 - Barley, Owner: Adams, Terry",
@@ -957,15 +957,15 @@ func TestExampleQuery_SelectManyIndexed(t *testing.T) {
 
 	logFiles := []LogFile{file1, file2, file3}
 
-	results := ToSlice[string](SelectManyIndexed[LogFile, string](
+	results := ToSlice(SelectManyIndexed(
 		func(fileIndex int, file LogFile) Query[string] {
-			return SelectIndexed[string, string](
+			return SelectIndexed(
 				func(lineIndex int, line string) string {
 					return fmt.Sprintf("File:[%d] - %s => line: %d - %s", fileIndex+1, file.Name, lineIndex+1, line)
 				},
-			)(FromSlice[string](file.Lines))
+			)(FromSlice(file.Lines))
 		},
-	)(FromSlice[LogFile](logFiles)))
+	)(FromSlice(logFiles)))
 
 	assert.DeepEqual(t, results, []string{
 		"File:[1] - file1.log => line: 1 - INFO: 2013/11/05 18:11:01 main.go:44: Special Information",
@@ -1011,14 +1011,14 @@ func TestExampleQuery_SelectManyBy(t *testing.T) {
 	}
 
 	people := []Person{magnus, terry, charlotte}
-	results := ToSlice[string](SelectManyBy[Person, Pet, string](
+	results := ToSlice(SelectManyBy(
 		func(person Person) Query[Pet] {
-			return FromSlice[Pet](person.Pets)
+			return FromSlice(person.Pets)
 		},
 		func(pet Pet, person Person) string {
 			return fmt.Sprintf("Owner: %s, Pet: %s", person.Name, pet.Name)
 		},
-	)(FromSlice[Person](people)))
+	)(FromSlice(people)))
 
 	assert.DeepEqual(t, results, []string{"Owner: Hedlund, Magnus, Pet: Daisy",
 		"Owner: Adams, Terry, Pet: Barley",
@@ -1054,7 +1054,7 @@ func TestExampleQuery_SequenceEqual(t *testing.T) {
 		{Name: "Daisy", Age: 4},
 	}
 
-	equal := SequenceEqual[Pet](FromSlice[Pet](pets1), FromSlice[Pet](pets2))
+	equal := SequenceEqual(FromSlice(pets1), FromSlice(pets2))
 	assert.DeepEqual(t, equal, true)
 	// Output:
 	// Are the lists equals? true
@@ -1065,7 +1065,7 @@ func TestExampleQuery_SequenceEqual(t *testing.T) {
 func TestExampleQuery_Single(t *testing.T) {
 	fruits1 := []string{"orange"}
 
-	fruit1, _ := Single[string](FromSlice[string](fruits1))
+	fruit1, _ := Single(FromSlice(fruits1))
 
 	assert.DeepEqual(t, fruit1, "orange")
 	// Output:
@@ -1077,7 +1077,7 @@ func TestExampleQuery_Single(t *testing.T) {
 func TestExampleQuery_SingleWith(t *testing.T) {
 	fruits := []string{"apple", "banana", "mango", "orange", "passionfruit", "grape"}
 
-	fruit, _ := SingleWith[string](func(f string) bool { return len(f) > 10 })(FromSlice[string](fruits))
+	fruit, _ := SingleWith(func(f string) bool { return len(f) > 10 })(FromSlice(fruits))
 
 	assert.DeepEqual(t, fruit, "passionfruit")
 	// Output:
@@ -1089,13 +1089,14 @@ func TestExampleQuery_SingleWith(t *testing.T) {
 // and return the remaining elements.
 func TestExampleQuery_Skip(t *testing.T) {
 	grades := []int{59, 82, 70, 56, 92, 98, 85}
-	lowerGrades := ToSlice[int](
+	lowerGrades := ToSlice(
 
-		Skip[int](3)(
-			OrderByDescending[int, int](
+		Skip(
+			OrderByDescending(
 				generics.NumericCompare[int],
 				func(g int) int { return g },
-			)(FromSlice[int](grades)).Query,
+			)(FromSlice(grades)).Query,
+			3,
 		),
 	)
 
@@ -1110,13 +1111,13 @@ func TestExampleQuery_Skip(t *testing.T) {
 func TestExampleQuery_SkipWhile(t *testing.T) {
 	grades := []int{59, 82, 70, 56, 92, 98, 85}
 
-	lowerGrades := ToSlice[int](
+	lowerGrades := ToSlice(
 
-		SkipWhile[int](func(g int) bool { return g >= 80 })(
-			OrderByDescending[int, int](
+		SkipWhile(func(g int) bool { return g >= 80 })(
+			OrderByDescending(
 				generics.NumericCompare[int],
 				func(g int) int { return g },
-			)(FromSlice[int](grades)).Query,
+			)(FromSlice(grades)).Query,
 		),
 	)
 
@@ -1133,8 +1134,8 @@ func TestExampleQuery_SkipWhile(t *testing.T) {
 func TestExampleQuery_SkipWhileIndexed(t *testing.T) {
 	amounts := []int{5000, 2500, 9000, 8000, 6500, 4000, 1500, 5500}
 
-	query := ToSlice[int](
-		SkipWhileIndexed[int](func(index int, amount int) bool { return amount > index*1000 })(FromSlice[int](amounts)),
+	query := ToSlice(
+		SkipWhileIndexed(func(index int, amount int) bool { return amount > index*1000 })(FromSlice(amounts)),
 	)
 
 	assert.DeepEqual(t, query, []int{4000, 1500, 5500})
@@ -1148,8 +1149,8 @@ func TestExampleQuery_SkipWhileIndexed(t *testing.T) {
 func TestExampleQuery_Sort(t *testing.T) {
 	amounts := []int{5000, 2500, 9000, 8000, 6500, 4000, 1500, 5500}
 
-	query := ToSlice[int](
-		Sort[int](func(i, j int) bool { return i < j })(FromSlice[int](amounts)),
+	query := ToSlice(
+		Sort(func(i, j int) bool { return i < j })(FromSlice(amounts)),
 	)
 	assert.DeepEqual(t, query, []int{1500, 2500, 4000, 5000, 5500, 6500, 8000, 9000})
 
@@ -1162,7 +1163,7 @@ func TestExampleQuery_Sort(t *testing.T) {
 // to sum the values of a slice.
 func TestExampleQuery_SumFloats(t *testing.T) {
 	numbers := []float64{43.68, 1.25, 583.7, 6.5}
-	sum := Sum[float64, float64](FromSlice[float64](numbers))
+	sum := Sum(FromSlice(numbers))
 	assert.DeepEqual(t, sum, 635.130000)
 	// Output:
 	// The sum of the numbers is 635.130000.
@@ -1174,7 +1175,7 @@ func TestExampleQuery_SumFloats(t *testing.T) {
 func TestExampleQuery_SumInts(t *testing.T) {
 	numbers := []int{43, 1, 583, 6}
 
-	sum := Sum[int, int](FromSlice[int](numbers))
+	sum := Sum(FromSlice(numbers))
 
 	assert.DeepEqual(t, sum, 633)
 	// Output:
@@ -1187,7 +1188,7 @@ func TestExampleQuery_SumInts(t *testing.T) {
 func TestExampleQuery_SumUInts(t *testing.T) {
 	numbers := []uint{43, 1, 583, 6}
 
-	sum := Sum[uint, uint](FromSlice[uint](numbers))
+	sum := Sum(FromSlice(numbers))
 
 	assert.DeepEqual(t, sum, uint(633))
 	// Output:
@@ -1196,12 +1197,13 @@ func TestExampleQuery_SumUInts(t *testing.T) {
 }
 
 // The following code example demonstrates how to use Take
-//  to return elements from the start of a slice.
+//
+//	to return elements from the start of a slice.
 func TestExampleQuery_Take(t *testing.T) {
 	grades := []int{59, 82, 70, 56, 92, 98, 85}
 
-	topThreeGrades := ToSlice[int](
-		Take[int](3)(OrderByDescending[int, int](generics.NumericCompare[int], func(g int) int { return g })(FromSlice[int](grades)).Query),
+	topThreeGrades := ToSlice(
+		Take(OrderByDescending(generics.NumericCompare[int], func(g int) int { return g })(FromSlice(grades)).Query, 3),
 	)
 	assert.DeepEqual(t, topThreeGrades, []int{98, 92, 85})
 
@@ -1214,7 +1216,7 @@ func TestExampleQuery_Take(t *testing.T) {
 func TestExampleQuery_TakeWhile(t *testing.T) {
 	fruits := []string{"apple", "banana", "mango", "orange", "passionfruit", "grape"}
 
-	query := ToSlice[string](TakeWhile[string](func(fruit string) bool { return fruit != "orange" })(FromSlice[string](fruits)))
+	query := ToSlice(TakeWhile(func(fruit string) bool { return fruit != "orange" })(FromSlice(fruits)))
 
 	assert.DeepEqual(t, query, []string{"apple", "banana", "mango"})
 	// Output:
@@ -1229,9 +1231,9 @@ func TestExampleQuery_TakeWhileIndexed(t *testing.T) {
 	fruits := []string{"apple", "passionfruit", "banana", "mango",
 		"orange", "blueberry", "grape", "strawberry"}
 
-	query := ToSlice[string](TakeWhileIndexed[string](
+	query := ToSlice(TakeWhileIndexed(
 		func(index int, fruit string) bool { return len(fruit) >= index },
-	)(FromSlice[string](fruits)))
+	)(FromSlice(fruits)))
 
 	assert.DeepEqual(t, query, []string{"apple", "passionfruit", "banana", "mango", "orange", "blueberry"})
 	// Output:
@@ -1244,7 +1246,7 @@ func TestExampleQuery_ToChannel(t *testing.T) {
 	c := make(chan int)
 
 	go func() {
-		ToChannel[int](Repeat(10, 3), c)
+		ToChannel(Repeat(10, 3), c)
 	}()
 
 	for i := range c {
@@ -1261,7 +1263,7 @@ func TestExampleQuery_ToChannel(t *testing.T) {
 func TestExampleQuery_ToChannelT(t *testing.T) {
 	c := make(chan string)
 
-	go ToChannel[string](Repeat("ten", 3), c)
+	go ToChannel(Repeat("ten", 3), c)
 
 	for i := range c {
 		assert.DeepEqual(t, i, "ten")
@@ -1286,11 +1288,11 @@ func TestExampleQuery_ToMap(t *testing.T) {
 		{Name: "apple", Code: 9},
 	}
 
-	map1 := ToMap[int, string](Select[Product, KeyValue[int, string]](
+	map1 := ToMap(Select(
 		func(item Product) KeyValue[int, string] {
 			return KeyValue[int, string]{Key: item.Code, Value: item.Name}
 		},
-	)(FromSlice[Product](products)))
+	)(FromSlice(products)))
 
 	assert.DeepEqual(t, map1, map[int]string{4: "orange", 9: "apple", 12: "lemon"})
 
@@ -1305,13 +1307,13 @@ func TestExampleQuery_ToMap(t *testing.T) {
 func TestExampleQuery_ToMapBy(t *testing.T) {
 	input := [][]any{{1, true}}
 
-	result := ToMapBy[int, bool, []any](func(t []any) int {
+	result := ToMapBy(func(t []any) int {
 		return t[0].(int)
 	},
 		func(t []any) bool {
 			return t[1].(bool)
 		},
-	)(FromSlice[[]any](input))
+	)(FromSlice(input))
 
 	assert.DeepEqual(t, result, map[int]bool{1: true})
 	// Output:
@@ -1320,7 +1322,7 @@ func TestExampleQuery_ToMapBy(t *testing.T) {
 
 // The following code example demonstrates how to use ToSlice to populate a slice.
 func TestExampleQuery_ToSlice(t *testing.T) {
-	result := ToSlice[int](Range(1, 10))
+	result := ToSlice(Range(1, 10))
 	assert.DeepEqual(t, result, []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10})
 	// Output:
 	// [1 2 3 4 5 6 7 8 9 10]
@@ -1329,7 +1331,7 @@ func TestExampleQuery_ToSlice(t *testing.T) {
 // The following code example demonstrates how to use Union
 // to obtain the union of two slices of integers.
 func TestExampleQuery_Union(t *testing.T) {
-	q := Results[int](Union(Range(1, 10), Range(6, 10)))
+	q := Results(Union(Range(1, 10), Range(6, 10)))
 
 	assert.DeepEqual(t, q, []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15})
 
@@ -1342,9 +1344,9 @@ func TestExampleQuery_Union(t *testing.T) {
 func TestExampleQuery_Where(t *testing.T) {
 	fruits := []string{"apple", "passionfruit", "banana", "mango",
 		"orange", "blueberry", "grape", "strawberry"}
-	query := ToSlice[string](Where[string](func(f string) bool {
+	query := ToSlice(Where(func(f string) bool {
 		return len(f) > 6
-	})(FromSlice[string](fruits)))
+	})(FromSlice(fruits)))
 
 	assert.DeepEqual(t, query, []string{"passionfruit", "blueberry", "strawberry"})
 
@@ -1356,9 +1358,9 @@ func TestExampleQuery_Where(t *testing.T) {
 // to filter a slice based on a predicate that involves the index of each element.
 func TestExampleQuery_WhereIndexed(t *testing.T) {
 	numbers := []int{0, 30, 20, 15, 90, 85, 40, 75}
-	query := ToSlice[int](WhereIndexed[int](func(index, number int) bool {
+	query := ToSlice(WhereIndexed(func(index, number int) bool {
 		return number <= index*10
-	})(FromSlice[int](numbers)))
+	})(FromSlice(numbers)))
 	assert.DeepEqual(t, query, []int{0, 20, 15, 40})
 
 	// Output:
@@ -1371,12 +1373,12 @@ func TestExampleQuery_Zip(t *testing.T) {
 	number := []int{1, 2, 3, 4, 5}
 	words := []string{"one", "two", "three"}
 
-	q := Zip[int, string, []any](func(a int, b string) []any {
+	q := Zip(func(a int, b string) []any {
 		return []any{a, b}
 	})(
-		FromSlice[int](number), FromSlice[string](words),
+		FromSlice(number), FromSlice(words),
 	)
-	assert.DeepEqual(t, ToSlice[[]any](q), [][]any{{1, "one"}, {2, "two"}, {3, "three"}})
+	assert.DeepEqual(t, ToSlice(q), [][]any{{1, "one"}, {2, "two"}, {3, "three"}})
 
 	// Output:
 	// [[1 one] [2 two] [3 three]]
@@ -1393,13 +1395,13 @@ func TestExampleOrderedQuery_ThenByDescendingT(t *testing.T) {
 		time.Date(2015, 7, 10, 0, 0, 0, 0, time.Local),
 	}
 
-	orderedDates := ToSlice[string](Select[time.Time, string](func(t time.Time) string {
+	orderedDates := ToSlice(Select(func(t time.Time) string {
 		return t.Format("2006-Jan-02")
-	})(ThenByDescending[time.Time, int](generics.NumericCompare[int], func(date time.Time) int {
+	})(ThenByDescending(generics.NumericCompare[int], func(date time.Time) int {
 		return int(date.Month())
-	})(OrderBy[time.Time, int](generics.NumericCompare[int], func(date time.Time) int {
+	})(OrderBy(generics.NumericCompare[int], func(date time.Time) int {
 		return date.Year()
-	})(FromSlice[time.Time](dates))).Query))
+	})(FromSlice(dates))).Query))
 
 	assert.DeepEqual(t, orderedDates, []string{
 		"2013-May-04", "2014-Jul-11", "2015-Jul-10", "2015-Mar-23", "2015-Jan-02",
@@ -1425,13 +1427,13 @@ func TestExampleOrderedQuery_ThenByT(t *testing.T) {
 		time.Date(2015, 7, 10, 0, 0, 0, 0, time.Local),
 	}
 
-	orderedDates := ToSlice[string](Select[time.Time, string](func(t time.Time) string {
+	orderedDates := ToSlice(Select(func(t time.Time) string {
 		return t.Format("2006-Jan-02")
-	})(ThenBy[time.Time, int](generics.NumericCompare[int], func(date time.Time) int {
+	})(ThenBy(generics.NumericCompare[int], func(date time.Time) int {
 		return int(date.Day())
-	})(OrderBy[time.Time, int](generics.NumericCompare[int], func(date time.Time) int {
+	})(OrderBy(generics.NumericCompare[int], func(date time.Time) int {
 		return date.Year()
-	})(FromSlice[time.Time](dates))).Query))
+	})(FromSlice(dates))).Query))
 
 	assert.DeepEqual(t, orderedDates, []string{
 		"2013-May-04", "2014-Jul-11", "2015-Jan-02", "2015-Jul-10", "2015-Mar-23",
@@ -1456,9 +1458,9 @@ func TestExampleQuery_AggregateT(t *testing.T) {
 	// Prepend each word to the beginning of the
 	// new sentence to reverse the word order.
 
-	reversed := Aggregate[string](
+	reversed := Aggregate(
 		func(workingSentence string, next string) string { return next + " " + workingSentence },
-	)(FromSlice[string](words))
+	)(FromSlice(words))
 	assert.DeepEqual(t, reversed, "dog lazy the over jumps fox brown quick the")
 	// Output:
 	// dog lazy the over jumps fox brown quick the
@@ -1470,14 +1472,14 @@ func TestExampleQuery_AggregateWithSeedT(t *testing.T) {
 	fruits := []string{"apple", "mango", "orange", "passionfruit", "grape"}
 
 	// Determine whether any string in the array is longer than "banana".
-	longestName := AggregateWithSeed[string](
+	longestName := AggregateWithSeed(
 		"banan", func(longest, next string) string {
 			if len(next) > len(longest) {
 				return next
 			}
 			return longest
 		},
-	)(FromSlice[string](fruits))
+	)(FromSlice(fruits))
 	assert.DeepEqual(t, longestName, "passionfruit")
 
 	// Output:
@@ -1490,7 +1492,7 @@ func TestExampleQuery_AggregateWithSeedByT(t *testing.T) {
 	input := []string{"apple", "mango", "orange", "passionfruit", "grape"}
 
 	// Determine whether any string in the array is longer than "banana".
-	longestName := AggregateWithSeedBy[string]("banana",
+	longestName := AggregateWithSeedBy("banana",
 		func(longest string, next string) string {
 			if len(longest) > len(next) {
 				return longest
@@ -1501,7 +1503,7 @@ func TestExampleQuery_AggregateWithSeedByT(t *testing.T) {
 		// Return the final result
 		func(result string) string {
 			return fmt.Sprintf("The fruit with the longest name is %s.", result)
-		})(FromSlice[string](input))
+		})(FromSlice(input))
 	assert.DeepEqual(t, longestName, "The fruit with the longest name is passionfruit.")
 	// Output:
 	// The fruit with the longest name is passionfruit.
@@ -1524,17 +1526,17 @@ func TestExampleQuery_AllT(t *testing.T) {
 		{Name: "Peter", Marks: []int{67, 78, 70, 82}},
 	}
 
-	approvedStudents := ToSlice[string](
-		Select[Student, string](func(t Student) string {
+	approvedStudents := ToSlice(
+		Select(func(t Student) string {
 			return t.Name
-		})(Where[Student](
+		})(Where(
 			func(student Student) bool {
-				return All[int](
+				return All(
 					func(mark int) bool { return mark > 70 },
-				)(FromSlice[int](student.Marks))
+				)(FromSlice(student.Marks))
 
 			},
-		)(FromSlice[Student](students))))
+		)(FromSlice(students))))
 
 	//List of approved students
 	assert.DeepEqual(t, approvedStudents, []string{"Hugo", "Michael"})
@@ -1560,24 +1562,24 @@ func TestExampleQuery_AnyWithT(t *testing.T) {
 		{Name: "Peter", Marks: []int{67, 78, 70, 82}},
 	}
 
-	studentsWithAnyMarkLt70 := ToSlice[string](
-		Select[Student, string](
+	studentsWithAnyMarkLt70 := ToSlice(
+		Select(
 			func(t Student) string {
 				return t.Name
 			},
 		)(
 
-			Where[Student](
+			Where(
 				func(student Student) bool {
 
-					return AnyWith[int](
+					return AnyWith(
 						func(mark int) bool { return mark < 70 },
-					)(FromSlice[int](
+					)(FromSlice(
 						student.Marks,
 					))
 
 				},
-			)(FromSlice[Student](students)),
+			)(FromSlice(students)),
 		),
 	)
 
@@ -1605,13 +1607,13 @@ func TestExampleQuery_CountWithT(t *testing.T) {
 		{Name: "Whiskers", Vaccinated: false},
 	}
 
-	numberUnvaccinated := CountWith[Pet](
+	numberUnvaccinated := CountWith(
 		func(p Pet) bool {
 
 			return p.Vaccinated == false
 
 		},
-	)(FromSlice[Pet](pets))
+	)(FromSlice(pets))
 	assert.DeepEqual(t, numberUnvaccinated, 2)
 
 	//Output:
@@ -1634,15 +1636,15 @@ func TestExampleQuery_DistinctByT(t *testing.T) {
 	}
 
 	//Exclude duplicates.
-	noduplicates := ToSlice[[]any](
-		Select[Product, []any](
+	noduplicates := ToSlice(
+		Select(
 			func(p Product) []any {
 
 				return []any{p.Name, p.Code}
 			},
 		)(
 
-			DistinctBy[Product](func(item Product) int { return item.Code })(FromSlice[Product](products)),
+			DistinctBy(func(item Product) int { return item.Code })(FromSlice(products)),
 		),
 	)
 
@@ -1679,16 +1681,16 @@ func TestExampleQuery_ExceptByT(t *testing.T) {
 
 	//Order and exclude duplicates.
 
-	expect := ToSlice[[]any](
-		Select[Product, []any](
+	expect := ToSlice(
+		Select(
 			func(p Product) []any {
 
 				return []any{p.Name, p.Code}
 			},
 		)(
-			ExceptBy[Product, int](
+			ExceptBy(
 				func(item Product) int { return item.Code },
-			)(FromSlice[Product](fruits1), FromSlice[Product](fruits2)),
+			)(FromSlice(fruits1), FromSlice(fruits2)),
 		))
 	assert.DeepEqual(t, expect, [][]any{
 		{"orange", 4},
@@ -1706,9 +1708,9 @@ func TestExampleQuery_ExceptByT(t *testing.T) {
 func TestExampleQuery_FirstWithT(t *testing.T) {
 	numbers := []int{9, 34, 65, 92, 87, 435, 3, 54, 83, 23, 87, 435, 67, 12, 19}
 
-	first, _ := FirstWith[int](
+	first, _ := FirstWith(
 		func(item int) bool { return item > 80 },
-	)(FromSlice[int](numbers))
+	)(FromSlice(numbers))
 	assert.DeepEqual(t, first, 92)
 	// Output:
 	// 92
@@ -1719,11 +1721,11 @@ func TestExampleQuery_FirstWithT(t *testing.T) {
 // to output all elements of an array.
 func TestExampleQuery_ForEach(t *testing.T) {
 	fruits := []string{"orange", "apple", "lemon", "apple"}
-	ForEach[string](
+	ForEach(
 		func(fruit string) {
 			fmt.Println(fruit)
 		},
-	)(FromSlice[string](fruits))
+	)(FromSlice(fruits))
 
 	// Output:
 	// orange
@@ -1737,11 +1739,11 @@ func TestExampleQuery_ForEach(t *testing.T) {
 func TestExampleQuery_ForEachIndexed(t *testing.T) {
 	fruits := []string{"orange", "apple", "lemon", "apple"}
 
-	ForEachIndexed[string](
+	ForEachIndexed(
 		func(i int, fruit string) {
 			fmt.Printf("%d.%s\n", i, fruit)
 		},
-	)(FromSlice[string](fruits))
+	)(FromSlice(fruits))
 	// Output:
 	// 0.orange
 	// 1.apple
@@ -1753,9 +1755,9 @@ func TestExampleQuery_ForEachIndexed(t *testing.T) {
 // to output all elements of an array.
 func TestExampleQuery_ForEachT(t *testing.T) {
 	fruits := []string{"orange", "apple", "lemon", "apple"}
-	ForEach[string](func(fruit string) {
+	ForEach(func(fruit string) {
 		fmt.Println(fruit)
-	})(FromSlice[string](fruits))
+	})(FromSlice(fruits))
 	// Output:
 	// orange
 	// apple
@@ -1768,9 +1770,9 @@ func TestExampleQuery_ForEachT(t *testing.T) {
 func TestExampleQuery_ForEachIndexedT(t *testing.T) {
 	fruits := []string{"orange", "apple", "lemon", "apple"}
 
-	ForEachIndexed[string](func(i int, fruit string) {
+	ForEachIndexed(func(i int, fruit string) {
 		fmt.Printf("%d.%s\n", i, fruit)
-	})(FromSlice[string](fruits))
+	})(FromSlice(fruits))
 	// Output:
 	// 0.orange
 	// 1.apple
@@ -1797,10 +1799,10 @@ func TestExampleQuery_GroupByT(t *testing.T) {
 	// Group the pets using Age as the key value
 	// and selecting only the pet's Name for each value.
 
-	query := ToSlice[Group[int, string]](OrderBy[Group[int, string], int](generics.NumericCompare[int], func(g Group[int, string]) int { return g.Key })(GroupBy[Pet, int, string](
+	query := ToSlice(OrderBy(generics.NumericCompare[int], func(g Group[int, string]) int { return g.Key })(GroupBy(
 		func(p Pet) int { return p.Age },
 		func(p Pet) string { return p.Name },
-	)(FromSlice[Pet](pets))).Query)
+	)(FromSlice(pets))).Query)
 	assert.DeepEqual(t, query, []Group[int, string]{
 		{1, []string{"Whiskers"}},
 		{4, []string{"Boots", "Daisy"}},
@@ -1818,7 +1820,8 @@ func TestExampleQuery_GroupByT(t *testing.T) {
 }
 
 // The following code example demonstrates how to use GroupJoinT
-//  to perform a grouped join on two slices.
+//
+//	to perform a grouped join on two slices.
 func TestExampleQuery_GroupJoinT(t *testing.T) {
 
 	type Person struct {
@@ -1846,19 +1849,19 @@ func TestExampleQuery_GroupJoinT(t *testing.T) {
 	// that contains a person's name as the key and a slice of strings
 	// of names of the pets they own as a value.
 
-	q := ToSlice[KeyValue[string, []string]](
-		GroupJoin[Person, Pet, KeyValue[string, []string], Person](
+	q := ToSlice(
+		GroupJoin(
 			func(p Person) Person { return p },
 			func(p Pet) Person { return p.Owner },
 			func(person Person, pets []Pet) KeyValue[string, []string] {
 
-				return KeyValue[string, []string]{person.Name, ToSlice[string](
-					Select[Pet, string](
+				return KeyValue[string, []string]{person.Name, ToSlice(
+					Select(
 						func(pet Pet) string { return pet.Name },
-					)(FromSlice[Pet](pets)),
+					)(FromSlice(pets)),
 				)}
 			},
-		)(FromSlice[Person](people), FromSlice[Pet](pets)),
+		)(FromSlice(people), FromSlice(pets)),
 	)
 
 	assert.DeepEqual(t, q, []KeyValue[string, []string]{
@@ -1909,18 +1912,18 @@ func TestExampleQuery_IntersectByT(t *testing.T) {
 		{Name: "apple", Code: 9},
 	}
 
-	duplicates := ToSlice[[]any](
-		Select[Product, []any](
+	duplicates := ToSlice(
+		Select(
 			func(p Product) []any {
 
 				return []any{p.Name, p.Code}
 			},
 		)(
-			IntersectBy[Product, int](
+			IntersectBy(
 				func(p Product) int { return p.Code },
 			)(
-				FromSlice[Product](store1),
-				FromSlice[Product](store2),
+				FromSlice(store1),
+				FromSlice(store2),
 			),
 		),
 	)
@@ -1961,12 +1964,12 @@ func TestExampleQuery_JoinT(t *testing.T) {
 	// each element is an anonymous type that contains a
 	// Pet's name and the name of the Person that owns the Pet.
 
-	query := ToSlice[string](
-		Join[Person, Pet, string, Person](
+	query := ToSlice(
+		Join(
 			func(person Person) Person { return person },
 			func(pet Pet) Person { return pet.Owner },
 			func(person Person, pet Pet) string { return fmt.Sprintf("%s - %s", person.Name, pet.Name) },
-		)(FromSlice[Person](people), FromSlice[Pet](pets)),
+		)(FromSlice(people), FromSlice(pets)),
 	)
 
 	assert.DeepEqual(t, query, []string{
@@ -1989,7 +1992,7 @@ func TestExampleQuery_LastWithT(t *testing.T) {
 	numbers := []int{9, 34, 65, 92, 87, 435, 3, 54,
 		83, 23, 87, 67, 12, 19}
 
-	last, _ := LastWith[int](func(n int) bool { return n > 80 })(FromSlice[int](numbers))
+	last, _ := LastWith(func(n int) bool { return n > 80 })(FromSlice(numbers))
 
 	assert.DeepEqual(t, last, 87)
 
@@ -2016,8 +2019,8 @@ func TestExampleQuery_OrderByDescendingT(t *testing.T) {
 
 	//Order and get the top 3 players
 
-	top3Players := ToSlice[string](
-		Select[KeyValue[int64, Player], string](
+	top3Players := ToSlice(
+		Select(
 			func(kv KeyValue[int64, Player]) string {
 				return fmt.Sprintf(
 					"Rank: #%d - Player: %s - Points: %d",
@@ -2028,15 +2031,16 @@ func TestExampleQuery_OrderByDescendingT(t *testing.T) {
 			},
 		)(
 
-			SelectIndexed[Player, KeyValue[int64, Player]](
+			SelectIndexed(
 				func(i int, p Player) KeyValue[int64, Player] {
 					return KeyValue[int64, Player]{Key: int64(i + 1), Value: p}
 				},
-			)(Take[Player](3)(
-				OrderByDescending[Player, int64](
+			)(Take(
+				OrderByDescending(
 					generics.NumericCompare[int64],
 					func(p Player) int64 { return p.Points },
-				)(FromSlice[Player](players)).Query,
+				)(FromSlice(players)).Query,
+				3,
 			))),
 	)
 	assert.DeepEqual(t, top3Players, []string{
@@ -2066,18 +2070,18 @@ func TestExampleQuery_OrderByT(t *testing.T) {
 		{Name: "Daisy", Age: 4},
 	}
 
-	orderedPets := ToSlice[string](
-		Select[Pet, string](
+	orderedPets := ToSlice(
+		Select(
 			func(pet Pet) string {
 				return fmt.Sprintf("%s - %d", pet.Name, pet.Age)
 
 			},
 		)(
-			OrderBy[Pet, int](
+			OrderBy(
 				generics.NumericCompare[int],
 				func(pet Pet) int { return pet.Age },
 			)(
-				FromSlice[Pet](pets),
+				FromSlice(pets),
 			).Query,
 		),
 	)
@@ -2099,8 +2103,8 @@ func TestExampleQuery_OrderByT(t *testing.T) {
 // The following code example demonstrates how to use SelectT
 // to project over a slice.
 func TestExampleQuery_SelectT(t *testing.T) {
-	squares := ToSlice[int](
-		Select[int, int](
+	squares := ToSlice(
+		Select(
 			func(x int) int { return x * x },
 		)(Range(1, 10)),
 	)
@@ -2116,16 +2120,16 @@ func TestExampleQuery_SelectT(t *testing.T) {
 func TestExampleQuery_SelectIndexedT(t *testing.T) {
 	numbers := []int{5, 4, 1, 3, 9, 8, 6, 7, 2, 0}
 
-	numsInPlace := ToSlice[string](
-		Select[KeyValue[int, bool], string](
+	numsInPlace := ToSlice(
+		Select(
 			func(kv KeyValue[int, bool]) string {
 				return fmt.Sprintf("%d: %t", kv.Key, kv.Value)
 			},
 		)(
-			SelectIndexed[int, KeyValue[int, bool]](
+			SelectIndexed(
 				func(index, num int) KeyValue[int, bool] { return KeyValue[int, bool]{Key: num, Value: (num == index)} },
 			)(
-				FromSlice[int](numbers),
+				FromSlice(numbers),
 			),
 		),
 	)
@@ -2185,14 +2189,14 @@ func TestExampleQuery_SelectManyByT(t *testing.T) {
 	}
 
 	people := []Person{magnus, terry, charlotte}
-	results := ToSlice[string](
-		SelectManyBy[Person, Pet, string](
-			func(person Person) Query[Pet] { return FromSlice[Pet](person.Pets) },
+	results := ToSlice(
+		SelectManyBy(
+			func(person Person) Query[Pet] { return FromSlice(person.Pets) },
 			func(pet Pet, person Person) string {
 				return fmt.Sprintf("Owner: %s, Pet: %s", person.Name, pet.Name)
 			},
 		)(
-			FromSlice[Person](people),
+			FromSlice(people),
 		))
 
 	assert.DeepEqual(t, results, []string{
@@ -2223,27 +2227,27 @@ func TestExampleQuery_SelectManyT(t *testing.T) {
 		"The wizard quickly jinxed the gnomes before they vaporized",
 	}
 
-	results := ToSlice[string](
-		SelectIndexed[Group[string, string], string](
+	results := ToSlice(
+		SelectIndexed(
 			func(index int, wordGroup Group[string, string]) string {
 				return fmt.Sprintf("Rank: #%d, Word: %s, Counts: %d", index+1, wordGroup.Key, len(wordGroup.Group))
 			})(
-			Take[Group[string, string]](5)(ThenBy[Group[string, string], string](
+			Take(ThenBy(
 				strings.Compare,
 				func(wordGroup Group[string, string]) string {
 					return wordGroup.Key
-				})(OrderByDescending[Group[string, string], int](
+				})(OrderByDescending(
 				generics.NumericCompare[int],
 				func(wordGroup Group[string, string]) int {
 					return len(wordGroup.Group)
-				})(GroupBy[string, string, string](
+				})(GroupBy(
 				func(word string) string { return word },
 				func(word string) string { return word },
 			)(
-				SelectMany[string, string](
+				SelectMany(
 					func(sentence string) Query[string] {
-						return FromSlice[string](strings.Split(sentence, " "))
-					})(FromSlice[string](sentences))))).Query),
+						return FromSlice(strings.Split(sentence, " "))
+					})(FromSlice(sentences))))).Query, 5),
 		),
 	)
 
@@ -2296,12 +2300,12 @@ func TestExampleQuery_SelectManyIndexedT(t *testing.T) {
 	}
 
 	logFiles := []LogFile{file1, file2, file3}
-	results := ToSlice[string](SelectManyIndexed[LogFile, string](
+	results := ToSlice(SelectManyIndexed(
 		func(fileIndex int, file LogFile) Query[string] {
-			return SelectIndexed[string, string](func(lineIndex int, line string) string {
+			return SelectIndexed(func(lineIndex int, line string) string {
 				return fmt.Sprintf("File:[%d] - %s => line: %d - %s", fileIndex+1, file.Name, lineIndex+1, line)
-			})(FromSlice[string](file.Lines))
-		})(FromSlice[LogFile](logFiles)))
+			})(FromSlice(file.Lines))
+		})(FromSlice(logFiles)))
 
 	assert.DeepEqual(t, results, []string{
 		"File:[1] - file1.log => line: 1 - INFO: 2013/11/05 18:11:01 main.go:44: Special Information",
@@ -2348,20 +2352,20 @@ func TestExampleQuery_SelectManyByIndexedT(t *testing.T) {
 
 	people := []Person{magnus, terry, charlotte}
 
-	results := ToSlice[string](
-		SelectManyByIndexed[Person, string, string](
+	results := ToSlice(
+		SelectManyByIndexed(
 			func(index int, person Person) Query[string] {
-				return Select[Pet, string](
+				return Select(
 					func(pet Pet) string {
 						return fmt.Sprintf("%d - %s", index, pet.Name)
 					},
-				)(FromSlice[Pet](person.Pets))
+				)(FromSlice(person.Pets))
 
 			},
 			func(indexedPet string, person Person) string {
 				return fmt.Sprintf("Pet: %s, Owner: %s", indexedPet, person.Name)
 			},
-		)(FromSlice[Person](people)),
+		)(FromSlice(people)),
 	)
 	assert.DeepEqual(t, results, []string{
 		"Pet: 0 - Daisy, Owner: Hedlund, Magnus",
@@ -2378,13 +2382,13 @@ func TestExampleQuery_SelectManyByIndexedT(t *testing.T) {
 
 }
 
-//The following code example demonstrates how to use SingleWithT
+// The following code example demonstrates how to use SingleWithT
 // to select the only element of a slice that satisfies a condition.
 func TestExampleQuery_SingleWithT(t *testing.T) {
 	fruits := []string{"apple", "banana", "mango", "orange", "passionfruit", "grape"}
-	fruit, _ := SingleWith[string](
+	fruit, _ := SingleWith(
 		func(f string) bool { return len(f) > 10 },
-	)(FromSlice[string](fruits))
+	)(FromSlice(fruits))
 	assert.DeepEqual(t, fruit, "passionfruit")
 	// Output:
 	// passionfruit
@@ -2394,10 +2398,10 @@ func TestExampleQuery_SingleWithT(t *testing.T) {
 // to skip elements of an array as long as a condition is true.
 func TestExampleQuery_SkipWhileT(t *testing.T) {
 	grades := []int{59, 82, 70, 56, 92, 98, 85}
-	lowerGrades := ToSlice[int](
-		SkipWhile[int](
+	lowerGrades := ToSlice(
+		SkipWhile(
 			func(g int) bool { return g >= 80 })(
-			OrderByDescending[int, int](generics.NumericCompare[int], func(g int) int { return g })(FromSlice[int](grades)).Query),
+			OrderByDescending(generics.NumericCompare[int], func(g int) int { return g })(FromSlice(grades)).Query),
 	)
 
 	//"All grades below 80:
@@ -2412,9 +2416,9 @@ func TestExampleQuery_SkipWhileT(t *testing.T) {
 func TestExampleQuery_SkipWhileIndexedT(t *testing.T) {
 	amounts := []int{5000, 2500, 9000, 8000, 6500, 4000, 1500, 5500}
 
-	query := ToSlice[int](
-		SkipWhileIndexed[int](func(index int, amount int) bool { return amount > index*1000 })(
-			FromSlice[int](amounts),
+	query := ToSlice(
+		SkipWhileIndexed(func(index int, amount int) bool { return amount > index*1000 })(
+			FromSlice(amounts),
 		),
 	)
 	assert.DeepEqual(t, query, []int{4000, 1500, 5500})
@@ -2438,13 +2442,13 @@ func TestExampleQuery_SortT(t *testing.T) {
 		{Name: "Daisy", Age: 4},
 	}
 
-	orderedPets := ToSlice[string](
-		Select[Pet, string](
+	orderedPets := ToSlice(
+		Select(
 			func(pet Pet) string {
 				return fmt.Sprintf("%s - %d", pet.Name, pet.Age)
 			},
 		)(
-			Sort[Pet](func(pet1 Pet, pet2 Pet) bool { return pet1.Age < pet2.Age })(FromSlice[Pet](pets)),
+			Sort(func(pet1 Pet, pet2 Pet) bool { return pet1.Age < pet2.Age })(FromSlice(pets)),
 		),
 	)
 
@@ -2467,10 +2471,10 @@ func TestExampleQuery_SortT(t *testing.T) {
 func TestExampleQuery_TakeWhileT(t *testing.T) {
 	fruits := []string{"apple", "banana", "mango", "orange", "passionfruit", "grape"}
 
-	query := ToSlice[string](
-		TakeWhile[string](
+	query := ToSlice(
+		TakeWhile(
 			func(fruit string) bool { return fruit != "orange" },
-		)(FromSlice[string](fruits)),
+		)(FromSlice(fruits)),
 	)
 	assert.DeepEqual(t, query, []string{"apple", "banana", "mango"})
 	// Output:
@@ -2485,10 +2489,10 @@ func TestExampleQuery_TakeWhileIndexedT(t *testing.T) {
 	fruits := []string{"apple", "passionfruit", "banana", "mango",
 		"orange", "blueberry", "grape", "strawberry"}
 
-	query := ToSlice[string](
-		TakeWhileIndexed[string](
+	query := ToSlice(
+		TakeWhileIndexed(
 			func(index int, fruit string) bool { return len(fruit) >= index },
-		)(FromSlice[string](fruits)),
+		)(FromSlice(fruits)),
 	)
 	assert.DeepEqual(t, query, []string{"apple", "passionfruit", "banana", "mango", "orange", "blueberry"})
 	// Output:
@@ -2510,10 +2514,10 @@ func TestExampleQuery_ToMapByT(t *testing.T) {
 		{Name: "apple", Code: 9},
 	}
 
-	map1 := ToMapBy[int, string, Product](
+	map1 := ToMapBy(
 		func(item Product) int { return item.Code },
 		func(item Product) string { return item.Name },
-	)(FromSlice[Product](products))
+	)(FromSlice(products))
 	assert.DeepEqual(t, map1, map[int]string{
 		4:  "orange",
 		9:  "apple",
@@ -2531,9 +2535,9 @@ func TestExampleQuery_ToMapByT(t *testing.T) {
 func TestExampleQuery_WhereT(t *testing.T) {
 	fruits := []string{"apple", "passionfruit", "banana", "mango",
 		"orange", "blueberry", "grape", "strawberry"}
-	query := ToSlice[string](Where[string](func(f string) bool {
+	query := ToSlice(Where(func(f string) bool {
 		return len(f) > 6
-	})(FromSlice[string](fruits)))
+	})(FromSlice(fruits)))
 
 	assert.DeepEqual(t, []string{"passionfruit", "blueberry", "strawberry"}, query)
 	// Output:
@@ -2545,7 +2549,7 @@ func TestExampleQuery_WhereT(t *testing.T) {
 func TestExampleQuery_WhereIndexedT(t *testing.T) {
 	numbers := []int{0, 30, 20, 15, 90, 85, 40, 75}
 
-	query := ToSlice[int](WhereIndexed[int](func(index int, number int) bool { return number <= index*10 })(FromSlice[int](numbers)))
+	query := ToSlice(WhereIndexed(func(index int, number int) bool { return number <= index*10 })(FromSlice(numbers)))
 
 	assert.DeepEqual(t, []int{0, 20, 15, 40}, query)
 	// Output:
@@ -2558,11 +2562,11 @@ func TestExampleQuery_ZipT(t *testing.T) {
 	number := []int{1, 2, 3, 4, 5}
 	words := []string{"one", "two", "three"}
 
-	s := Results[[]any](Zip[int, string, []any](
+	s := Results(Zip(
 		func(a int, b string) []any { return []any{a, b} },
 	)(
-		FromSlice[int](number),
-		FromSlice[string](words),
+		FromSlice(number),
+		FromSlice(words),
 	))
 	assert.DeepEqual(t, s, [][]any{
 		{1, "one"},
@@ -2582,9 +2586,9 @@ func TestExampleFromChannelT(t *testing.T) {
 	ch <- "three"
 	close(ch)
 
-	q := FromChannel[string](ch)
+	q := FromChannel(ch)
 
-	assert.DeepEqual(t, Results[string](q), []string{"one", "two", "three"})
+	assert.DeepEqual(t, Results(q), []string{"one", "two", "three"})
 	// Output:
 	// [one two three]
 }

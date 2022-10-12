@@ -5,9 +5,8 @@ import "testing"
 func TestAppend(t *testing.T) {
 	input := []int{1, 2, 3, 4}
 	want := []int{1, 2, 3, 4, 5}
-	appendFn := Append[int](5)
-	if q := appendFn(FromSlice[int](input)); !validateQuery[int](q, want) {
-		t.Errorf("From(%v).Append()=%v expected %v", input, toSlice[int](q), want)
+	if q := Append(FromSlice(input), 5); !ValidateQuery(q, want) {
+		t.Errorf("From(%v).Append()=%v expected %v", input, ToSlice(q), want)
 	}
 }
 
@@ -16,17 +15,15 @@ func TestConcat(t *testing.T) {
 	input2 := []int{4, 5}
 	want := []int{1, 2, 3, 4, 5}
 
-	concatFn := Concat[int]
-	if q := concatFn(FromSlice[int](input1), FromSlice[int](input2)); !validateQuery[int](q, want) {
-		t.Errorf("From(%v).Concat(%v)=%v expected %v", input1, input2, toSlice(q), want)
+	if q := Concat(FromSlice(input1), FromSlice(input2)); !ValidateQuery(q, want) {
+		t.Errorf("From(%v).Concat(%v)=%v expected %v", input1, input2, ToSlice(q), want)
 	}
 }
 
 func TestPrepend(t *testing.T) {
 	input := []int{1, 2, 3, 4}
 	want := []int{0, 1, 2, 3, 4}
-	prependFn := Prepend[int](0)
-	if q := prependFn(FromSlice[int](input)); !validateQuery[int](q, want) {
-		t.Errorf("From(%v).Prepend()=%v expected %v", input, toSlice(q), want)
+	if q := Prepend(FromSlice(input), 0); !ValidateQuery(q, want) {
+		t.Errorf("From(%v).Prepend()=%v expected %v", input, ToSlice(q), want)
 	}
 }

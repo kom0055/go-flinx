@@ -2,26 +2,24 @@ package flinx
 
 // Skip bypasses a specified number of elements in a collection and then returns
 // the remaining elements.
-func Skip[T any](count int) func(q Query[T]) Query[T] {
+func Skip[T any](q Query[T], count int) Query[T] {
 
-	return func(q Query[T]) Query[T] {
-		return Query[T]{
-			Iterate: func() Iterator[T] {
-				next := q.Iterate()
-				n := count
+	return Query[T]{
+		Iterate: func() Iterator[T] {
+			next := q.Iterate()
+			n := count
 
-				return func() (item T, ok bool) {
-					for ; n > 0; n-- {
-						item, ok = next()
-						if !ok {
-							return
-						}
+			return func() (item T, ok bool) {
+				for ; n > 0; n-- {
+					item, ok = next()
+					if !ok {
+						return
 					}
-
-					return next()
 				}
-			},
-		}
+
+				return next()
+			}
+		},
 	}
 
 }

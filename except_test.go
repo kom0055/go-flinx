@@ -7,8 +7,8 @@ func TestExcept(t *testing.T) {
 	input2 := []int{1, 2}
 	want := []int{3, 4, 5, 5}
 
-	if q := Except[int](FromSlice[int](input1), FromSlice[int](input2)); !validateQuery(q, want) {
-		t.Errorf("From(%v).Except(%v)=%v expected %v", input1, input2, toSlice(q), want)
+	if q := Except(FromSlice(input1), FromSlice(input2)); !ValidateQuery(q, want) {
+		t.Errorf("From(%v).Except(%v)=%v expected %v", input1, input2, ToSlice(q), want)
 	}
 }
 
@@ -17,9 +17,9 @@ func TestExceptBy(t *testing.T) {
 	input2 := []int{1}
 	want := []int{2, 4, 2}
 
-	if q := ExceptBy[int, int](func(i int) int {
+	if q := ExceptBy(func(i int) int {
 		return i % 2
-	})(FromSlice[int](input1), FromSlice[int](input2)); !validateQuery(q, want) {
-		t.Errorf("From(%v).ExceptBy(%v)=%v expected %v", input1, input2, toSlice(q), want)
+	})(FromSlice(input1), FromSlice(input2)); !ValidateQuery(q, want) {
+		t.Errorf("From(%v).ExceptBy(%v)=%v expected %v", input1, input2, ToSlice(q), want)
 	}
 }

@@ -1,23 +1,24 @@
 package flinx
 
 import (
-	"github.com/kom0055/go-flinx/generics"
-	"gotest.tools/v3/assert"
 	"math"
 	"reflect"
 	"testing"
+
+	"github.com/kom0055/go-flinx/generics"
+	"gotest.tools/v3/assert"
 )
 
 func TestAll(t *testing.T) {
 
 	input := []int{2, 4, 6, 8}
 
-	r1 := All[int](func(i int) bool {
+	r1 := All(func(i int) bool {
 		return i%2 == 0
-	})(FromSlice[int](input))
-	r2 := All[int](func(i int) bool {
+	})(FromSlice(input))
+	r2 := All(func(i int) bool {
 		return i%2 != 0
-	})(FromSlice[int](input))
+	})(FromSlice(input))
 	if !r1 {
 		t.Errorf("From(%v).All()=%v", input, r1)
 	}
@@ -41,7 +42,7 @@ func TestAny(t *testing.T) {
 
 		for _, test := range tests {
 
-			if r := Any[int](FromSlice[int](test.input)); r != test.want {
+			if r := Any(FromSlice(test.input)); r != test.want {
 				t.Errorf("From(%v).Any()=%v expected %v", test.input, r, test.want)
 			}
 		}
@@ -56,7 +57,7 @@ func TestAny(t *testing.T) {
 		}
 
 		for _, test := range tests {
-			if r := Any[rune](FromString(test.input)); r != test.want {
+			if r := Any(FromString(test.input)); r != test.want {
 				t.Errorf("From(%v).Any()=%v expected %v", test.input, r, test.want)
 			}
 		}
@@ -75,9 +76,9 @@ func TestAnyWith(t *testing.T) {
 
 	for _, test := range tests {
 
-		if r := AnyWith[int](func(i int) bool {
+		if r := AnyWith(func(i int) bool {
 			return i == 4
-		})(FromSlice[int](test.input)); r != test.want {
+		})(FromSlice(test.input)); r != test.want {
 			t.Errorf("From(%v).Any()=%v expected %v", test.input, r, test.want)
 		}
 	}
@@ -93,7 +94,7 @@ func TestAverage(t *testing.T) {
 		}
 
 		for _, test := range tests {
-			if r := Average[int](FromSlice[int](test.input)); r != test.want {
+			if r := Average(FromSlice(test.input)); r != test.want {
 				t.Errorf("From(%v).Average()=%v expected %v", test.input, r, test.want)
 			}
 		}
@@ -108,7 +109,7 @@ func TestAverage(t *testing.T) {
 		}
 
 		for _, test := range tests {
-			if r := Average[uint](FromSlice[uint](test.input)); r != test.want {
+			if r := Average(FromSlice(test.input)); r != test.want {
 				t.Errorf("From(%v).Average()=%v expected %v", test.input, r, test.want)
 			}
 		}
@@ -122,7 +123,7 @@ func TestAverage(t *testing.T) {
 		}
 
 		for _, test := range tests {
-			if r := Average[float32](FromSlice[float32](test.input)); r != test.want {
+			if r := Average(FromSlice(test.input)); r != test.want {
 				t.Errorf("From(%v).Average()=%v expected %v", test.input, r, test.want)
 			}
 		}
@@ -131,7 +132,7 @@ func TestAverage(t *testing.T) {
 
 func TestAverageForNaN(t *testing.T) {
 
-	if r := Average[int](FromSlice[int]([]int{})); !math.IsNaN(r) {
+	if r := Average(FromSlice([]int{})); !math.IsNaN(r) {
 		t.Errorf("From([]int{}).Average()=%v expected %v", r, math.NaN())
 	}
 }
@@ -147,7 +148,7 @@ func TestContains(t *testing.T) {
 		}
 
 		for _, test := range tests {
-			if r := Contains[int](test.value)(FromSlice[int](test.input)); r != test.want {
+			if r := Contains(test.value)(FromSlice(test.input)); r != test.want {
 				t.Errorf("From(%v).Contains(%v)=%v expected %v", test.input, test.value, r, test.want)
 			}
 		}
@@ -162,7 +163,7 @@ func TestContains(t *testing.T) {
 		}
 
 		for _, test := range tests {
-			if r := Contains[uint](test.value)(FromSlice[uint](test.input)); r != test.want {
+			if r := Contains(test.value)(FromSlice(test.input)); r != test.want {
 				t.Errorf("From(%v).Contains(%v)=%v expected %v", test.input, test.value, r, test.want)
 			}
 		}
@@ -178,7 +179,7 @@ func TestContains(t *testing.T) {
 		}
 
 		for _, test := range tests {
-			if r := Contains[float32](test.value)(FromSlice[float32](test.input)); r != test.want {
+			if r := Contains(test.value)(FromSlice(test.input)); r != test.want {
 				t.Errorf("From(%v).Contains(%v)=%v expected %v", test.input, test.value, r, test.want)
 			}
 		}
@@ -196,7 +197,7 @@ func TestCount(t *testing.T) {
 
 		for _, test := range tests {
 
-			if r := Count[int](FromSlice[int](test.input)); r != test.want {
+			if r := Count(FromSlice(test.input)); r != test.want {
 				t.Errorf("From(%v).Count()=%v expected %v", test.input, r, test.want)
 			}
 		}
@@ -211,7 +212,7 @@ func TestCount(t *testing.T) {
 
 		for _, test := range tests {
 
-			if r := Count[uint](FromSlice[uint](test.input)); r != test.want {
+			if r := Count(FromSlice(test.input)); r != test.want {
 				t.Errorf("From(%v).Count()=%v expected %v", test.input, r, test.want)
 			}
 		}
@@ -226,7 +227,7 @@ func TestCount(t *testing.T) {
 
 		for _, test := range tests {
 
-			if r := Count[float32](FromSlice[float32](test.input)); r != test.want {
+			if r := Count(FromSlice(test.input)); r != test.want {
 				t.Errorf("From(%v).Count()=%v expected %v", test.input, r, test.want)
 			}
 		}
@@ -244,9 +245,9 @@ func TestCountWith(t *testing.T) {
 
 	for _, test := range tests {
 
-		if r := CountWith[int](func(i int) bool {
+		if r := CountWith(func(i int) bool {
 			return i <= 2
-		})(FromSlice[int](test.input)); r != test.want {
+		})(FromSlice(test.input)); r != test.want {
 			t.Errorf("From(%v).CountWith()=%v expected %v", test.input, r, test.want)
 		}
 	}
@@ -262,7 +263,7 @@ func TestFirst(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		if r, ok := First[int](FromSlice[int](test.input)); r != test.want[0] || ok != test.want[1] {
+		if r, ok := First(FromSlice(test.input)); r != test.want[0] || ok != test.want[1] {
 			t.Errorf("From(%v).First()=%v %v expected %v", test.input, r, ok, test.want)
 		}
 	}
@@ -279,9 +280,9 @@ func TestFirstWith(t *testing.T) {
 
 	for _, test := range tests {
 
-		if r, ok := FirstWith[int](func(i int) bool {
+		if r, ok := FirstWith(func(i int) bool {
 			return i > 2
-		})(FromSlice[int](test.input)); r != test.want[0] || ok != test.want[1] {
+		})(FromSlice(test.input)); r != test.want[0] || ok != test.want[1] {
 			t.Errorf("From(%v).FirstWith()=%v expected %v", test.input, r, test.want)
 		}
 	}
@@ -299,9 +300,9 @@ func TestForEach(t *testing.T) {
 	for _, test := range tests {
 		output := []int{}
 
-		ForEach[int](func(i int) {
+		ForEach(func(i int) {
 			output = append(output, i*2)
-		})(FromSlice[int](test.input))
+		})(FromSlice(test.input))
 
 		if !reflect.DeepEqual(output, test.want) {
 			t.Fatalf("From(%#v).ForEach()=%#v expected=%#v", test.input, output, test.want)
@@ -321,9 +322,9 @@ func TestForEachIndexed(t *testing.T) {
 	for _, test := range tests {
 		output := []int{}
 
-		ForEachIndexed[int](func(index, item int) {
+		ForEachIndexed(func(index, item int) {
 			output = append(output, item+index)
-		})(FromSlice[int](test.input))
+		})(FromSlice(test.input))
 
 		if !reflect.DeepEqual(output, test.want) {
 			t.Fatalf("From(%#v).ForEachIndexed()=%#v expected=%#v", test.input, output, test.want)
@@ -341,7 +342,7 @@ func TestLast(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		if r, ok := Last[int](FromSlice[int](test.input)); r != test.want[0] || ok != test.want[1] {
+		if r, ok := Last(FromSlice(test.input)); r != test.want[0] || ok != test.want[1] {
 			t.Errorf("From(%v).Last()=%v expected %v", test.input, r, test.want)
 		}
 	}
@@ -358,9 +359,9 @@ func TestLastWith(t *testing.T) {
 
 	for _, test := range tests {
 
-		if r, ok := LastWith[int](func(i int) bool {
+		if r, ok := LastWith(func(i int) bool {
 			return i > 2
-		})(FromSlice[int](test.input)); r != test.want[0] || ok != test.want[1] {
+		})(FromSlice(test.input)); r != test.want[0] || ok != test.want[1] {
 			t.Errorf("From(%v).LastWith()=%v expected %v", test.input, r, test.want)
 		}
 	}
@@ -377,7 +378,7 @@ func TestMax(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		if r, ok := Max[int](generics.NumericCompare[int])(FromSlice[int](test.input)); r != test.want[0] || ok != test.want[1] {
+		if r, ok := Max(generics.NumericCompare[int])(FromSlice(test.input)); r != test.want[0] || ok != test.want[1] {
 			t.Errorf("From(%v).Max()=%v %v expected %v", test.input, r, ok, test.want)
 		}
 	}
@@ -394,7 +395,7 @@ func TestMin(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		if r, ok := Min[int](generics.NumericCompare[int])(FromSlice[int](test.input)); r != test.want[0] || ok != test.want[1] {
+		if r, ok := Min(generics.NumericCompare[int])(FromSlice(test.input)); r != test.want[0] || ok != test.want[1] {
 			t.Errorf("From(%v).Min()=%v expected %v", test.input, r, test.want)
 		}
 	}
@@ -404,7 +405,7 @@ func TestResults(t *testing.T) {
 	input := []int{1, 2, 3}
 	want := []int{1, 2, 3}
 
-	if r := Results[int](FromSlice[int](input)); !reflect.DeepEqual(r, want) {
+	if r := Results(FromSlice(input)); !reflect.DeepEqual(r, want) {
 		t.Errorf("From(%v).Raw()=%v expected %v", input, r, want)
 	}
 }
@@ -422,7 +423,7 @@ func TestSequenceEqual(t *testing.T) {
 
 	for _, test := range tests {
 
-		if r := SequenceEqual[int](FromSlice[int](test.input), FromSlice[int](test.input2)); r != test.want {
+		if r := SequenceEqual(FromSlice(test.input), FromSlice(test.input2)); r != test.want {
 			t.Errorf("From(%v).SequenceEqual(%v)=%v expected %v", test.input, test.input2, r, test.want)
 		}
 	}
@@ -439,7 +440,7 @@ func TestSingle(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		if r, ok := Single[int](FromSlice[int](test.input)); r != test.want[0] || ok != test.want[1] {
+		if r, ok := Single(FromSlice(test.input)); r != test.want[0] || ok != test.want[1] {
 			t.Errorf("From(%v).Single()=%v expected %v", test.input, r, test.want)
 		}
 	}
@@ -457,9 +458,9 @@ func TestSingleWith(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		if r, ok := SingleWith[int](func(i int) bool {
+		if r, ok := SingleWith(func(i int) bool {
 			return i > 2
-		})(FromSlice[int](test.input)); r != test.want[0] || ok != test.want[1] {
+		})(FromSlice(test.input)); r != test.want[0] || ok != test.want[1] {
 			t.Errorf("From(%v).SingleWith()=%v expected %v", test.input, r, test.want)
 		}
 	}
@@ -476,7 +477,7 @@ func TestSumInts(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		if r := Sum[int, int64](FromSlice[int](test.input)); r != test.want {
+		if r := int64(Sum(FromSlice(test.input))); r != test.want {
 			t.Errorf("From(%v).SumInts()=%v expected %v", test.input, r, test.want)
 		}
 	}
@@ -493,7 +494,7 @@ func TestSumUInts(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		if r := Sum[uint, uint64](FromSlice[uint](test.input)); r != test.want {
+		if r := Sum(FromSlice(test.input)); uint64(r) != test.want {
 			t.Errorf("From(%v).SumInts()=%v expected %v", test.input, r, test.want)
 		}
 	}
@@ -510,7 +511,7 @@ func TestSumFloats(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		if r := Sum[float32, float64](FromSlice[float32](test.input)); r != test.want {
+		if r := Sum(FromSlice(test.input)); float64(r) != test.want {
 			t.Errorf("From(%v).SumFloats()=%v expected %v", test.input, r, test.want)
 		}
 	}
@@ -522,7 +523,7 @@ func TestToChannel(t *testing.T) {
 
 	go func() {
 
-		ToChannel[int](FromSlice[int](input), c)
+		ToChannel(FromSlice(input), c)
 	}()
 
 	result := []int{}
@@ -539,7 +540,7 @@ func TestToChannelT(t *testing.T) {
 	c := make(chan string)
 	input := []string{"1", "2", "3", "4", "5"}
 
-	go ToChannel[string](FromSlice[string](input), c)
+	go ToChannel(FromSlice(input), c)
 
 	result := []string{}
 	for value := range c {
@@ -557,7 +558,7 @@ func TestToMap(t *testing.T) {
 	input[2] = false
 	input[3] = true
 
-	result := ToMap[int, bool](FromMap[int, bool](input))
+	result := ToMap(FromMap(input))
 
 	if !reflect.DeepEqual(result, input) {
 		t.Errorf("From(%v).ToMap()=%v expected %v", input, result, input)
@@ -570,14 +571,14 @@ func TestToMapBy(t *testing.T) {
 	input[2] = false
 	input[3] = true
 
-	result := ToMapBy[int, bool, KeyValue[int, bool]](
+	result := ToMapBy(
 		func(t KeyValue[int, bool]) int {
 			return t.Key
 		},
 		func(t KeyValue[int, bool]) bool {
 			return t.Value
 		},
-	)(FromMap[int, bool](input))
+	)(FromMap(input))
 
 	if !reflect.DeepEqual(result, input) {
 		t.Errorf("From(%v).ToMapBy()=%v expected %v", input, result, input)
@@ -635,7 +636,7 @@ func TestToSlice(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		test.output = ToSlice[int](FromSlice[int](test.input))
+		test.output = ToSlice(FromSlice(test.input))
 
 		// test slice values
 		assert.DeepEqual(t, test.output, test.want)

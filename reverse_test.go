@@ -12,8 +12,8 @@ func TestReverse(t *testing.T) {
 
 	for _, test := range tests {
 
-		if q := Reverse[int](FromSlice[int](test.input)); !validateQuery(q, test.want) {
-			t.Errorf("From(%v).Reverse()=%v expected %v", test.input, toSlice(q), test.want)
+		if q := Reverse(FromSlice(test.input)); !ValidateQuery(q, test.want) {
+			t.Errorf("From(%v).Reverse()=%v expected %v", test.input, ToSlice(q), test.want)
 		}
 	}
 }

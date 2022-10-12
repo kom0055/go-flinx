@@ -13,13 +13,13 @@ func TestJoin(t *testing.T) {
 		{4, 4},
 	}
 
-	q := Join[int, int, KeyValue[int, int], int](func(i int) int { return i },
+	q := Join(func(i int) int { return i },
 		func(i int) int { return i },
 		func(outer int, inner int) KeyValue[int, int] {
 			return KeyValue[int, int]{outer, inner}
 		},
-	)(FromSlice[int](outer), FromSlice[int](inner))
-	if !validateQuery[KeyValue[int, int]](q, want) {
-		t.Errorf("From().Join()=%v expected %v", toSlice(q), want)
+	)(FromSlice(outer), FromSlice(inner))
+	if !ValidateQuery(q, want) {
+		t.Errorf("From().Join()=%v expected %v", ToSlice(q), want)
 	}
 }

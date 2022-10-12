@@ -2,31 +2,30 @@ package flinx
 
 // Append inserts an item to the end of a collection, so it becomes the last
 // item.
-func Append[T any](items ...T) func(q Query[T]) Query[T] {
-	return func(q Query[T]) Query[T] {
-		length := len(items)
-		var defaultValue T
-		return Query[T]{
-			Iterate: func() Iterator[T] {
-				next := q.Iterate()
-				index := 0
+func Append[T any](q Query[T], items ...T) Query[T] {
 
-				return func() (T, bool) {
-					i, ok := next()
-					if ok {
-						return i, ok
-					}
-					if index < length {
-						idx := index
-						index++
+	length := len(items)
+	var defaultValue T
+	return Query[T]{
+		Iterate: func() Iterator[T] {
+			next := q.Iterate()
+			index := 0
 
-						return items[idx], true
-					}
-
-					return defaultValue, false
+			return func() (T, bool) {
+				i, ok := next()
+				if ok {
+					return i, ok
 				}
-			},
-		}
+				if index < length {
+					idx := index
+					index++
+
+					return items[idx], true
+				}
+
+				return defaultValue, false
+			}
+		},
 	}
 
 }
@@ -62,26 +61,25 @@ func Concat[T any](q, q2 Query[T]) Query[T] {
 
 // Prepend inserts an item to the beginning of a collection, so it becomes the
 // first item.
-func Prepend[T any](items ...T) func(q Query[T]) Query[T] {
-	return func(q Query[T]) Query[T] {
-		length := len(items)
-		return Query[T]{
-			Iterate: func() Iterator[T] {
-				next := q.Iterate()
-				index := 0
+func Prepend[T any](q Query[T], items ...T) Query[T] {
 
-				return func() (T, bool) {
-					if index < length {
-						idx := index
-						index++
-						return items[idx], true
+	length := len(items)
+	return Query[T]{
+		Iterate: func() Iterator[T] {
+			next := q.Iterate()
+			index := 0
 
-					}
+			return func() (T, bool) {
+				if index < length {
+					idx := index
+					index++
+					return items[idx], true
 
-					return next()
 				}
-			},
-		}
+
+				return next()
+			}
+		},
 	}
 
 }

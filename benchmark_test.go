@@ -1,8 +1,9 @@
 package flinx
 
 import (
-	"github.com/ahmetb/go-linq/v3"
 	"testing"
+
+	"github.com/ahmetb/go-linq/v3"
 )
 
 const (
@@ -12,16 +13,15 @@ const (
 func BenchmarkSelectWhereFirst(b *testing.B) {
 
 	b.Run("BenchmarkSelectWhereFirst_flinx", func(b *testing.B) {
-		selectFn := Select[int](func(i int) int {
+		selectFn := Select(func(i int) int {
 			return -i
 		})
-		whereFn := Where[int](func(i int) bool {
+		whereFn := Where(func(i int) bool {
 			return i > -5
 		})
-		firstFn := First[int]
 
 		for n := 0; n < b.N; n++ {
-			firstFn(whereFn(selectFn(Range(1, size))))
+			First(whereFn(selectFn(Range(1, size))))
 		}
 	})
 	b.Run("BenchmarkSelectWhereFirst_linq", func(b *testing.B) {
@@ -49,12 +49,11 @@ func BenchmarkSelectWhereFirst(b *testing.B) {
 
 func BenchmarkSum(b *testing.B) {
 	b.Run("BenchmarkSum_flinx", func(b *testing.B) {
-		whereFn := Where[int](func(i int) bool {
+		whereFn := Where(func(i int) bool {
 			return i%2 == 0
 		})
-		sumFn := Sum[int, int]
 		for n := 0; n < b.N; n++ {
-			sumFn(whereFn(Range(1, size)))
+			Sum(whereFn(Range(1, size)))
 		}
 	})
 
@@ -77,19 +76,18 @@ func BenchmarkSum(b *testing.B) {
 
 func BenchmarkZipSkipTake(b *testing.B) {
 	b.Run("BenchmarkZipSkipTake_flinx", func(b *testing.B) {
-		takeFn := Take[int](5)
-		skipFn := Skip[int](2)
 
-		selectFn := Select[int](func(i int) int {
+		selectFn := Select(func(i int) int {
 			return i * 2
 		})
 
-		zipFn := Zip[int, int, int](func(i, j int) int {
+		zipFn := Zip(func(i, j int) int {
 			return i + j
 		})
 
 		for n := 0; n < b.N; n++ {
-			takeFn(skipFn(zipFn(Range(1, size), selectFn(Range(1, size)))))
+
+			Take(Skip(zipFn(Range(1, size), selectFn(Range(1, size))), 2), 5)
 		}
 	})
 
@@ -116,7 +114,7 @@ func BenchmarkZipSkipTake(b *testing.B) {
 
 func BenchmarkFromChannel(b *testing.B) {
 	b.Run("BenchmarkFromChannel_flinx", func(b *testing.B) {
-		allFn := All[int](func(i int) bool {
+		allFn := All(func(i int) bool {
 			return true
 		})
 
@@ -129,7 +127,7 @@ func BenchmarkFromChannel(b *testing.B) {
 
 				close(ch)
 			}()
-			allFn(FromChannel[int](ch))
+			allFn(FromChannel(ch))
 		}
 	})
 

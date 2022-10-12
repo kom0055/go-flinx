@@ -1,15 +1,16 @@
 package flinx
 
 import (
-	"gotest.tools/v3/assert"
 	"testing"
+
+	"gotest.tools/v3/assert"
 )
 import "strings"
 
 func Test_Aggregate(t *testing.T) {
-	First[int](Select[int, int](func(i int) int {
+	First(Select(func(i int) int {
 		return i * 2
-	})(Where[int](func(i int) bool {
+	})(Where(func(i int) bool {
 		return i%2 == 0
 	})(Range(1, 10))))
 
@@ -21,7 +22,7 @@ func Test_Aggregate(t *testing.T) {
 		{[]string{}, ""},
 	}
 
-	aggr := Aggregate[string](func(r, i string) string {
+	aggr := Aggregate(func(r, i string) string {
 		if len(r) > len(i) {
 			return r
 		}
@@ -29,7 +30,7 @@ func Test_Aggregate(t *testing.T) {
 	})
 	for _, test := range tests {
 
-		r := aggr(FromSlice[string](test.input))
+		r := aggr(FromSlice(test.input))
 		assert.Equal(t, r, test.want)
 
 	}
@@ -39,13 +40,13 @@ func TestAggregateWithSeed(t *testing.T) {
 	input := []string{"apple", "mango", "orange", "banana", "grape"}
 	want := "passionfruit"
 
-	aggr := AggregateWithSeed[string](want, func(r, i string) string {
+	aggr := AggregateWithSeed(want, func(r, i string) string {
 		if len(r) > len(i) {
 			return r
 		}
 		return i
 	})
-	r := aggr(FromSlice[string](input))
+	r := aggr(FromSlice(input))
 
 	assert.Equal(t, r, want)
 }
@@ -54,7 +55,7 @@ func TestAggregateWithSeedBy(t *testing.T) {
 	input := []string{"apple", "mango", "orange", "passionfruit", "grape"}
 	want := "PASSIONFRUIT"
 
-	aggr := AggregateWithSeedBy[string, string]("banana", func(r, i string) string {
+	aggr := AggregateWithSeedBy("banana", func(r, i string) string {
 		if len(r) > len(i) {
 			return r
 		}
@@ -63,7 +64,7 @@ func TestAggregateWithSeedBy(t *testing.T) {
 		func(r string) string {
 			return strings.ToUpper(r)
 		})
-	r := aggr(FromSlice[string](input))
+	r := aggr(FromSlice(input))
 
 	assert.Equal(t, r, want)
 }

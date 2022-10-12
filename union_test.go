@@ -7,7 +7,7 @@ func TestUnion(t *testing.T) {
 	input2 := []int{2, 4, 5, 1}
 	want := []int{1, 2, 3, 4, 5}
 
-	if q := Union[int](FromSlice[int](input1), FromSlice[int](input2)); !validateQuery(q, want) {
-		t.Errorf("From(%v).Union(%v)=%v expected %v", input1, input2, toSlice(q), want)
+	if q := Union(FromSlice(input1), FromSlice(input2)); !ValidateQuery(q, want) {
+		t.Errorf("From(%v).Union(%v)=%v expected %v", input1, input2, ToSlice(q), want)
 	}
 }

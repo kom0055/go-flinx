@@ -1,8 +1,9 @@
 package flinx
 
 import (
-	"gotest.tools/v3/assert"
 	"testing"
+
+	"gotest.tools/v3/assert"
 )
 
 func TestFrom(t *testing.T) {
@@ -19,9 +20,9 @@ func TestFrom(t *testing.T) {
 			{[]int{1, 2, 4}, []int{1, 2, 3}, false},
 		}
 		for _, test := range tests {
-			if q := FromSlice[int](test.input); validateQuery(q, test.output) != test.want {
+			if q := FromSlice(test.input); ValidateQuery(q, test.output) != test.want {
 				if test.want {
-					t.Errorf("From(%v)=%v expected %v", test.input, toSlice(q), test.output)
+					t.Errorf("From(%v)=%v expected %v", test.input, ToSlice(q), test.output)
 				} else {
 					t.Errorf("From(%v)=%v expected not equal", test.input, test.output)
 				}
@@ -40,9 +41,9 @@ func TestFrom(t *testing.T) {
 			{"str", []rune{'s', 't', 'g'}, false},
 		}
 		for _, test := range tests {
-			if q := FromString(test.input); validateQuery(q, test.output) != test.want {
+			if q := FromString(test.input); ValidateQuery(q, test.output) != test.want {
 				if test.want {
-					t.Errorf("From(%v)=%v expected %v", test.input, toSlice(q), test.output)
+					t.Errorf("From(%v)=%v expected %v", test.input, ToSlice(q), test.output)
 				} else {
 					t.Errorf("From(%v)=%v expected not equal", test.input, test.output)
 				}
@@ -61,9 +62,9 @@ func TestFrom(t *testing.T) {
 			{map[string]bool{"foo": true}, []KeyValue[string, bool]{{"foo", false}}, false},
 		}
 		for _, test := range tests {
-			if q := FromMap[string, bool](test.input); validateQuery(q, test.output) != test.want {
+			if q := FromMap(test.input); ValidateQuery(q, test.output) != test.want {
 				if test.want {
-					t.Errorf("From(%v)=%v expected %v", test.input, toSlice(q), test.output)
+					t.Errorf("From(%v)=%v expected %v", test.input, ToSlice(q), test.output)
 				} else {
 					t.Errorf("From(%v)=%v expected not equal", test.input, test.output)
 				}
@@ -94,9 +95,9 @@ func TestFrom(t *testing.T) {
 		}
 
 		for _, test := range tests {
-			if q := FromChannel[int](test.input); validateQuery(q, test.output) != test.want {
+			if q := FromChannel(test.input); ValidateQuery(q, test.output) != test.want {
 				if test.want {
-					t.Errorf("From(%v)=%v expected %v", test.input, toSlice(q), test.output)
+					t.Errorf("From(%v)=%v expected %v", test.input, ToSlice(q), test.output)
 				} else {
 					t.Errorf("From(%v)=%v expected not equal", test.input, test.output)
 				}
@@ -137,7 +138,7 @@ func TestFrom(t *testing.T) {
 			}
 		}
 		for _, test := range tests {
-			res := Results[any](FromIterable[any](fooIterator()))
+			res := Results(FromIterable(fooIterator()))
 			assert.DeepEqual(t, res, test.output)
 
 		}
@@ -154,7 +155,7 @@ func TestFromChannel(t *testing.T) {
 
 	w := []int{10, 15, -3}
 
-	if q := FromChannel[int](c); !validateQuery(q, w) {
+	if q := FromChannel(c); !ValidateQuery(q, w) {
 		t.Errorf("FromChannel() failed expected %v", w)
 	}
 }
@@ -168,7 +169,7 @@ func TestFromChannelT(t *testing.T) {
 
 	w := []int{10, 15, -3}
 
-	if q := FromChannel[int](c); !validateQuery(q, w) {
+	if q := FromChannel(c); !ValidateQuery(q, w) {
 		t.Errorf("FromChannelT() failed expected %v", w)
 	}
 }
@@ -177,7 +178,7 @@ func TestFromString(t *testing.T) {
 	s := "string"
 	w := []rune{'s', 't', 'r', 'i', 'n', 'g'}
 
-	if q := FromString(s); !validateQuery(q, w) {
+	if q := FromString(s); !ValidateQuery(q, w) {
 		t.Errorf("FromString(%v)!=%v", s, w)
 	}
 }
@@ -208,7 +209,7 @@ func TestFromIterable(t *testing.T) {
 			return
 		}
 	}
-	res := Results[any](FromIterable[any](fooIterator()))
+	res := Results(FromIterable(fooIterator()))
 	assert.DeepEqual(t, res, w)
 
 }
@@ -216,15 +217,15 @@ func TestFromIterable(t *testing.T) {
 func TestRange(t *testing.T) {
 	w := []int{-2, -1, 0, 1, 2}
 
-	if q := Range(-2, 5); !validateQuery(q, w) {
-		t.Errorf("Range(-2, 5)=%v expected %v", toSlice(q), w)
+	if q := Range(-2, 5); !ValidateQuery(q, w) {
+		t.Errorf("Range(-2, 5)=%v expected %v", ToSlice(q), w)
 	}
 }
 
 func TestRepeat(t *testing.T) {
 	w := []int{1, 1, 1, 1, 1}
 
-	if q := Repeat(1, 5); !validateQuery(q, w) {
-		t.Errorf("Repeat(1, 5)=%v expected %v", toSlice(q), w)
+	if q := Repeat(1, 5); !ValidateQuery(q, w) {
+		t.Errorf("Repeat(1, 5)=%v expected %v", ToSlice(q), w)
 	}
 }

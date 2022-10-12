@@ -1,8 +1,9 @@
 package flinx
 
 import (
-	"gotest.tools/v3/assert"
 	"testing"
+
+	"gotest.tools/v3/assert"
 )
 
 func TestSkip(t *testing.T) {
@@ -18,7 +19,7 @@ func TestSkip(t *testing.T) {
 		}
 
 		for _, test := range tests {
-			res := ToSlice[int](Skip[int](3)(FromSlice[int](test.input)))
+			res := ToSlice(Skip(FromSlice(test.input), 3))
 			assert.DeepEqual(t, res, test.output)
 
 		}
@@ -33,7 +34,7 @@ func TestSkip(t *testing.T) {
 		}
 
 		for _, test := range tests {
-			res := ToSlice[rune](Skip[rune](3)(FromString(test.input)))
+			res := ToSlice(Skip(FromString(test.input), 3))
 			assert.DeepEqual(t, res, test.output)
 
 		}
@@ -61,8 +62,8 @@ func TestSkipWhile(t *testing.T) {
 
 		for _, test := range tests {
 
-			if q := SkipWhile[int](test.predicate)(FromSlice[int](test.input)); !validateQuery(q, test.output) {
-				t.Errorf("From(%v).SkipWhile()=%v expected %v", test.input, toSlice(q), test.output)
+			if q := SkipWhile(test.predicate)(FromSlice(test.input)); !ValidateQuery(q, test.output) {
+				t.Errorf("From(%v).SkipWhile()=%v expected %v", test.input, ToSlice(q), test.output)
 			}
 		}
 	}
@@ -80,8 +81,8 @@ func TestSkipWhile(t *testing.T) {
 		}
 
 		for _, test := range tests {
-			if q := SkipWhile[rune](test.predicate)(FromString(test.input)); !validateQuery(q, test.output) {
-				t.Errorf("From(%v).SkipWhile()=%v expected %v", test.input, toSlice(q), test.output)
+			if q := SkipWhile(test.predicate)(FromString(test.input)); !ValidateQuery(q, test.output) {
+				t.Errorf("From(%v).SkipWhile()=%v expected %v", test.input, ToSlice(q), test.output)
 			}
 		}
 	}
@@ -108,8 +109,8 @@ func TestSkipWhileIndexed(t *testing.T) {
 
 		for _, test := range tests {
 
-			if q := SkipWhileIndexed[int](test.predicate)(FromSlice[int](test.input)); !validateQuery(q, test.output) {
-				t.Errorf("From(%v).SkipWhileIndexed()=%v expected %v", test.input, toSlice(q), test.output)
+			if q := SkipWhileIndexed(test.predicate)(FromSlice(test.input)); !ValidateQuery(q, test.output) {
+				t.Errorf("From(%v).SkipWhileIndexed()=%v expected %v", test.input, ToSlice(q), test.output)
 			}
 		}
 	}
@@ -128,8 +129,8 @@ func TestSkipWhileIndexed(t *testing.T) {
 
 		for _, test := range tests {
 
-			if q := SkipWhileIndexed[rune](test.predicate)(FromString(test.input)); !validateQuery(q, test.output) {
-				t.Errorf("From(%v).SkipWhileIndexed()=%v expected %v", test.input, toSlice(q), test.output)
+			if q := SkipWhileIndexed(test.predicate)(FromString(test.input)); !ValidateQuery(q, test.output) {
+				t.Errorf("From(%v).SkipWhileIndexed()=%v expected %v", test.input, ToSlice(q), test.output)
 			}
 		}
 	}

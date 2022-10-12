@@ -14,12 +14,11 @@ func TestDefaultIfEmpty(t *testing.T) {
 		{[]int{1, 2, 3, 4, 5}, []int{1, 2, 3, 4, 5}},
 	}
 
-	defaltIfEmptyFn := DefaultIfEmpty[int](0)
 	for _, test := range tests {
-		q := defaltIfEmptyFn(FromSlice(test.input))
+		q := DefaultIfEmpty(FromSlice(test.input), 0)
 
-		if !validateQuery(q, test.want) {
-			t.Errorf("From(%v).DefaultIfEmpty(%v)=%v expected %v", test.input, defaultValue, toSlice[int](q), test.want)
+		if !ValidateQuery(q, test.want) {
+			t.Errorf("From(%v).DefaultIfEmpty(%v)=%v expected %v", test.input, defaultValue, ToSlice(q), test.want)
 		}
 	}
 

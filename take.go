@@ -2,24 +2,22 @@ package flinx
 
 // Take returns a specified number of contiguous elements from the start of a
 // collection.
-func Take[T any](count int) func(q Query[T]) Query[T] {
+func Take[T any](q Query[T], count int) Query[T] {
 
-	return func(q Query[T]) Query[T] {
-		return Query[T]{
-			Iterate: func() Iterator[T] {
-				next := q.Iterate()
-				n := count
+	return Query[T]{
+		Iterate: func() Iterator[T] {
+			next := q.Iterate()
+			n := count
 
-				return func() (item T, ok bool) {
-					if n <= 0 {
-						return
-					}
-
-					n--
-					return next()
+			return func() (item T, ok bool) {
+				if n <= 0 {
+					return
 				}
-			},
-		}
+
+				n--
+				return next()
+			}
+		},
 	}
 
 }

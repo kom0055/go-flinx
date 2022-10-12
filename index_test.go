@@ -23,7 +23,7 @@ func TestIndexOf(t *testing.T) {
 
 		for _, test := range tests {
 
-			index := IndexOf[int](test.predicate)(FromSlice[int](test.input))
+			index := IndexOf(test.predicate)(FromSlice(test.input))
 			if index != test.expected {
 				t.Errorf("From(%v).IndexOf() expected %v received %v", test.input, test.expected, index)
 			}
@@ -56,7 +56,7 @@ func TestIndexOf(t *testing.T) {
 		}
 		for _, test := range tests {
 
-			index := IndexOf[rune](test.predicate)(FromString(test.input))
+			index := IndexOf(test.predicate)(FromString(test.input))
 			if index != test.expected {
 				t.Errorf("From(%v).IndexOf() expected %v received %v", test.input, test.expected, index)
 			}

@@ -11,7 +11,7 @@ func TestGroupJoin(t *testing.T) {
 		{2, 0},
 	}
 
-	q := GroupJoin[int, int, KeyValue[int, int], int](
+	q := GroupJoin(
 		func(t int) int {
 			return t
 		},
@@ -23,9 +23,9 @@ func TestGroupJoin(t *testing.T) {
 				outer, len(inners),
 			}
 		},
-	)(FromSlice[int](outer), FromSlice[int](inner))
+	)(FromSlice(outer), FromSlice(inner))
 
-	if !validateQuery(q, want) {
-		t.Errorf("From().GroupJoin()=%v expected %v", toSlice(q), want)
+	if !ValidateQuery(q, want) {
+		t.Errorf("From().GroupJoin()=%v expected %v", ToSlice(q), want)
 	}
 }

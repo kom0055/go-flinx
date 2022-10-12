@@ -1,14 +1,15 @@
 package flinx
 
 import (
-	"github.com/kom0055/go-flinx/generics"
 	"testing"
+
+	"github.com/kom0055/go-flinx/generics"
 )
 
 func TestEmpty(t *testing.T) {
-	q := OrderBy[string, int](generics.NumericCompare[int], func(in string) int {
+	q := OrderBy(generics.NumericCompare[int], func(in string) int {
 		return 0
-	})(FromSlice[string]([]string{}))
+	})(FromSlice([]string{}))
 
 	_, ok := q.Iterate()()
 	if ok {
@@ -23,7 +24,7 @@ func TestOrderBy(t *testing.T) {
 		slice[i].f1 = i
 	}
 
-	q := OrderBy[foo, int](generics.NumericCompare[int], getF1)(FromSlice[foo](slice))
+	q := OrderBy(generics.NumericCompare[int], getF1)(FromSlice(slice))
 
 	j := 0
 	next := q.Iterate()
@@ -43,8 +44,8 @@ func TestOrderByDescending(t *testing.T) {
 		slice[i].f1 = i
 	}
 
-	q := OrderByDescending[foo, int](generics.NumericCompare[int],
-		getF1)(FromSlice[foo](slice))
+	q := OrderByDescending(generics.NumericCompare[int],
+		getF1)(FromSlice(slice))
 
 	j := len(slice) - 1
 	next := q.Iterate()
@@ -65,8 +66,8 @@ func TestThenBy(t *testing.T) {
 		slice[i].f2 = i%2 == 0
 	}
 
-	q := ThenBy[foo, int](generics.OrderedCompare[int], getF1)(
-		OrderBy[foo, bool](generics.BoolCompare, getF2)(FromSlice[foo](slice)),
+	q := ThenBy(generics.OrderedCompare[int], getF1)(
+		OrderBy(generics.BoolCompare, getF2)(FromSlice(slice)),
 	)
 
 	next := q.Iterate()
@@ -85,8 +86,8 @@ func TestThenByDescending(t *testing.T) {
 		slice[i].f2 = i%2 == 0
 	}
 
-	orderByFn := OrderBy[foo, bool](generics.BoolCompare, getF2)(FromSlice[foo](slice))
-	thenByDescFn := ThenByDescending[foo, int](generics.NumericCompare[int], getF1)(orderByFn)
+	orderByFn := OrderBy(generics.BoolCompare, getF2)(FromSlice(slice))
+	thenByDescFn := ThenByDescending(generics.NumericCompare[int], getF1)(orderByFn)
 	q := thenByDescFn
 
 	next := q.Iterate()
@@ -104,9 +105,9 @@ func TestSort(t *testing.T) {
 		slice[i].f1 = i
 	}
 
-	q := Sort[foo](func(i, j foo) bool {
+	q := Sort(func(i, j foo) bool {
 		return i.f1 < j.f1
-	})(FromSlice[foo](slice))
+	})(FromSlice(slice))
 
 	j := 0
 	next := q.Iterate()

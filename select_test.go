@@ -19,8 +19,8 @@ func TestSelect(t *testing.T) {
 
 		for _, test := range tests {
 
-			if q := Select[int](test.selector)(FromSlice[int](test.input)); !validateQuery(q, test.output) {
-				t.Errorf("From(%v).Select()=%v expected %v", test.input, toSlice(q), test.output)
+			if q := Select(test.selector)(FromSlice(test.input)); !ValidateQuery(q, test.output) {
+				t.Errorf("From(%v).Select()=%v expected %v", test.input, ToSlice(q), test.output)
 			}
 		}
 	}
@@ -38,8 +38,8 @@ func TestSelect(t *testing.T) {
 
 		for _, test := range tests {
 
-			if q := Select[rune, string](test.selector)(FromString(test.input)); !validateQuery(q, test.output) {
-				t.Errorf("From(%v).Select()=%v expected %v", test.input, toSlice(q), test.output)
+			if q := Select(test.selector)(FromString(test.input)); !ValidateQuery(q, test.output) {
+				t.Errorf("From(%v).Select()=%v expected %v", test.input, ToSlice(q), test.output)
 			}
 		}
 	}
@@ -59,8 +59,8 @@ func TestSelectIndexed(t *testing.T) {
 
 		for _, test := range tests {
 
-			if q := SelectIndexed[int, int](test.selector)(FromSlice[int](test.input)); !validateQuery(q, test.output) {
-				t.Errorf("From(%v).SelectIndexed()=%v expected %v", test.input, toSlice(q), test.output)
+			if q := SelectIndexed(test.selector)(FromSlice(test.input)); !ValidateQuery(q, test.output) {
+				t.Errorf("From(%v).SelectIndexed()=%v expected %v", test.input, ToSlice(q), test.output)
 			}
 		}
 	}
@@ -78,8 +78,8 @@ func TestSelectIndexed(t *testing.T) {
 
 		for _, test := range tests {
 
-			if q := SelectIndexed[rune, string](test.selector)(FromString(test.input)); !validateQuery(q, test.output) {
-				t.Errorf("From(%v).SelectIndexed()=%v expected %v", test.input, toSlice(q), test.output)
+			if q := SelectIndexed(test.selector)(FromString(test.input)); !ValidateQuery(q, test.output) {
+				t.Errorf("From(%v).SelectIndexed()=%v expected %v", test.input, ToSlice(q), test.output)
 			}
 		}
 	}

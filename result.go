@@ -1,9 +1,10 @@
 package flinx
 
 import (
+	"math"
+
 	"golang.org/x/exp/constraints"
 	_ "golang.org/x/exp/constraints"
-	"math"
 )
 
 // All determines whether all elements of a collection satisfy a condition.
@@ -314,17 +315,15 @@ func SingleWith[T any](predicate func(T) bool) func(q Query[T]) (r T, found bool
 //
 // Values can be of any integer type: int, int8, int16, int32, int64. The result
 // is int64. Method returns zero if collection contains no elements.
-func Sum[T, V constraints.Integer | constraints.Float](q Query[T]) (r V) {
+func Sum[T constraints.Integer | constraints.Float](q Query[T]) (r T) {
 	next := q.Iterate()
 	item, ok := next()
 	if !ok {
 		return 0
 	}
-
-	r = V(item)
-
+	r = item
 	for item, ok = next(); ok; item, ok = next() {
-		r += V(item)
+		r += item
 	}
 
 	return

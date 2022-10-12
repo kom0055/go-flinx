@@ -4,7 +4,7 @@ func Where[T any](predicate func(T) bool) func(q Query[T]) Query[T] {
 	//predicateIdx := func(_ int, item T) bool {
 	//	return predicate(item)
 	//}
-	//return WhereIndexed[T](predicateIdx)
+	//return WhereIndexed(predicateIdx)
 	return func(q Query[T]) Query[T] {
 		return Query[T]{
 			Iterate: func() Iterator[T] {

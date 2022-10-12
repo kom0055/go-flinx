@@ -10,14 +10,14 @@ func TestGroupBy(t *testing.T) {
 	wantEven := []int{2, 4, 6, 8}
 	wantOdd := []int{1, 3, 5, 7, 9}
 
-	q := GroupBy[int, int, int](
+	q := GroupBy(
 		func(t int) int {
 			return t % 2
 		},
 		func(t int) int {
 			return t
 		},
-	)(FromSlice[int](input))
+	)(FromSlice(input))
 
 	next := q.Iterate()
 	eq := true
@@ -38,6 +38,6 @@ func TestGroupBy(t *testing.T) {
 	}
 
 	if !eq {
-		t.Errorf("From(%v).GroupBy()=%v", input, toSlice(q))
+		t.Errorf("From(%v).GroupBy()=%v", input, ToSlice(q))
 	}
 }
