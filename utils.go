@@ -4,6 +4,12 @@ func Self[T any](t T) T {
 	return t
 }
 
+func Not[T any](predicate func(T) bool) func(T) bool {
+	return func(t T) bool {
+		return !predicate(t)
+	}
+}
+
 func ValidateQuery[T comparable](q Query[T], output []T) bool {
 	next := q.Iterate()
 
