@@ -6,6 +6,14 @@ type Group[K, V any] struct {
 	Group []V
 }
 
+func (g Group[K, V]) GetKey() K {
+	return g.Key
+}
+
+func (g Group[K, V]) GetGroup() []V {
+	return g.Group
+}
+
 // GroupBy method groups the elements of a collection according to a specified
 // key selector function and projects the elements for each group by using a
 // specified function.
