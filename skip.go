@@ -31,8 +31,8 @@ func Skip[T any](q Query[T], count int) Query[T] {
 // the result is true. After the predicate function returns false for an
 // element, that element and the remaining elements in source are returned and
 // there are no more invocations of predicate.
-func SkipWhile[T any](predicate func(T) bool) func(q Query[T]) Query[T] {
-
+func SkipWhile[T any](predicates ...func(T) bool) func(q Query[T]) Query[T] {
+	predicate := Predicates(predicates...)
 	return func(q Query[T]) Query[T] {
 		return Query[T]{
 			Iterate: func() Iterator[T] {
@@ -68,7 +68,8 @@ func SkipWhile[T any](predicate func(T) bool) func(q Query[T]) Query[T] {
 // the result is true. After the predicate function returns false for an
 // element, that element and the remaining elements in source are returned and
 // there are no more invocations of predicate.
-func SkipWhileIndexed[T any](predicate func(int, T) bool) func(q Query[T]) Query[T] {
+func SkipWhileIndexed[T any](predicates ...func(int, T) bool) func(q Query[T]) Query[T] {
+	predicate := PredicatesIndexed(predicates...)
 	return func(q Query[T]) Query[T] {
 		return Query[T]{
 			Iterate: func() Iterator[T] {

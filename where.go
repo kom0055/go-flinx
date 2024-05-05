@@ -1,10 +1,11 @@
 package flinx
 
-func Where[T any](predicate func(T) bool) func(q Query[T]) Query[T] {
+func Where[T any](predicates ...func(T) bool) func(q Query[T]) Query[T] {
 	//predicateIdx := func(_ int, item T) bool {
 	//	return predicate(item)
 	//}
 	//return WhereIndexed(predicateIdx)
+	predicate := Predicates(predicates...)
 	return func(q Query[T]) Query[T] {
 		return Query[T]{
 			Iterate: func() Iterator[T] {
@@ -28,7 +29,8 @@ func Where[T any](predicate func(T) bool) func(q Query[T]) Query[T] {
 //
 // The first argument represents the zero-based index of the element within
 // collection. The second argument of predicate represents the element to test.
-func WhereIndexed[T any](predicate func(int, T) bool) func(q Query[T]) Query[T] {
+func WhereIndexed[T any](predicates ...func(int, T) bool) func(q Query[T]) Query[T] {
+	predicate := PredicatesIndexed(predicates...)
 	return func(q Query[T]) Query[T] {
 		return Query[T]{
 			Iterate: func() Iterator[T] {

@@ -90,3 +90,27 @@ func ValidateQuery[T comparable](q Query[T], output []T) bool {
 	_, ok2 := next()
 	return !(ok || ok2)
 }
+
+func Predicates[T any](predicates ...func(T) bool) func(T) bool {
+	return func(t T) bool {
+		for i := range predicates {
+			item := predicates[i]
+			if !item(t) {
+				return false
+			}
+		}
+		return true
+	}
+}
+
+func PredicatesIndexed[T any](predicates ...func(int, T) bool) func(int, T) bool {
+	return func(idx int, t T) bool {
+		for i := range predicates {
+			item := predicates[i]
+			if !item(idx, t) {
+				return false
+			}
+		}
+		return true
+	}
+}

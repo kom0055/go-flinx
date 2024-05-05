@@ -8,7 +8,8 @@ import (
 )
 
 // All determines whether all elements of a collection satisfy a condition.
-func All[T any](predicate func(T) bool) func(q Query[T]) bool {
+func All[T any](predicates ...func(T) bool) func(q Query[T]) bool {
+	predicate := Predicates(predicates...)
 	return func(q Query[T]) bool {
 		next := q.Iterate()
 
@@ -32,7 +33,8 @@ func Any[T any](q Query[T]) bool {
 }
 
 // AnyWith determines whether any element of a collection satisfies a condition.
-func AnyWith[T any](predicate func(T) bool) func(q Query[T]) bool {
+func AnyWith[T any](predicates ...func(T) bool) func(q Query[T]) bool {
+	predicate := Predicates(predicates...)
 	return func(q Query[T]) bool {
 		next := q.Iterate()
 
@@ -94,7 +96,8 @@ func Count[T any](q Query[T]) (r int) {
 
 // CountWith returns a number that represents how many elements in the specified
 // collection satisfy a condition.
-func CountWith[T any](predicate func(T) bool) func(q Query[T]) (r int) {
+func CountWith[T any](predicates ...func(T) bool) func(q Query[T]) (r int) {
+	predicate := Predicates(predicates...)
 	return func(q Query[T]) (r int) {
 		next := q.Iterate()
 
@@ -116,7 +119,8 @@ func First[T any](q Query[T]) (T, bool) {
 
 // FirstWith returns the first element of a collection that satisfies a
 // specified condition.
-func FirstWith[T any](predicate func(T) bool) func(q Query[T]) (T, bool) {
+func FirstWith[T any](predicates ...func(T) bool) func(q Query[T]) (T, bool) {
+	predicate := Predicates(predicates...)
 	return func(q Query[T]) (T, bool) {
 		next := q.Iterate()
 
@@ -179,7 +183,8 @@ func Last[T any](q Query[T]) (r T, exist bool) {
 
 // LastWith returns the last element of a collection that satisfies a specified
 // condition.
-func LastWith[T any](predicate func(T) bool) func(q Query[T]) (r T, exist bool) {
+func LastWith[T any](predicates ...func(T) bool) func(q Query[T]) (r T, exist bool) {
+	predicate := Predicates(predicates...)
 	return func(q Query[T]) (r T, exist bool) {
 		next := q.Iterate()
 
@@ -290,7 +295,8 @@ func Single[T any](q Query[T]) (r T, found bool) {
 
 // SingleWith returns the only element of a collection that satisfies a
 // specified condition, and nil if more than one such element exists.
-func SingleWith[T any](predicate func(T) bool) func(q Query[T]) (r T, found bool) {
+func SingleWith[T any](predicates ...func(T) bool) func(q Query[T]) (r T, found bool) {
+	predicate := Predicates(predicates...)
 	return func(q Query[T]) (r T, found bool) {
 		next := q.Iterate()
 

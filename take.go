@@ -24,7 +24,8 @@ func Take[T any](q Query[T], count int) Query[T] {
 
 // TakeWhile returns elements from a collection as long as a specified condition
 // is true, and then skips the remaining elements.
-func TakeWhile[T any](predicate func(T) bool) func(q Query[T]) Query[T] {
+func TakeWhile[T any](predicates ...func(T) bool) func(q Query[T]) Query[T] {
+	predicate := Predicates(predicates...)
 	return func(q Query[T]) Query[T] {
 		return Query[T]{
 			Iterate: func() Iterator[T] {
@@ -61,7 +62,8 @@ func TakeWhile[T any](predicate func(T) bool) func(q Query[T]) Query[T] {
 // function. The first argument of predicate represents the zero-based index of
 // the element within collection. The second argument represents the element to
 // test.
-func TakeWhileIndexed[T any](predicate func(int, T) bool) func(q Query[T]) Query[T] {
+func TakeWhileIndexed[T any](predicates ...func(int, T) bool) func(q Query[T]) Query[T] {
+	predicate := PredicatesIndexed(predicates...)
 	return func(q Query[T]) Query[T] {
 		return Query[T]{
 			Iterate: func() Iterator[T] {
