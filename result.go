@@ -362,6 +362,17 @@ func ToMap[K comparable, V any](q Query[KeyValue[K, V]]) map[K]V {
 	return m
 }
 
+func ToMapFromGroup[K comparable, V any](q Query[Group[K, V]]) map[K][]V {
+	m := map[K][]V{}
+
+	next := q.Iterate()
+
+	for item, ok := next(); ok; item, ok = next() {
+		m[item.Key] = append(m[item.Key], item.Group...)
+	}
+	return m
+}
+
 // ToMapBy iterates over a collection and populates the result map with
 // elements. Functions keySelector and valueSelector are executed for each
 // element of the collection to generate key and value for the map. Generated
